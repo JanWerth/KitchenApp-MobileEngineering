@@ -4,19 +4,34 @@
  */
 
 export type RootStackParamList = {
-  Root: undefined;
-  NotFound: undefined;
+	Root: undefined;
+	NotFound: undefined;
 };
 
 export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+	AddIngredientScreen: undefined;
+	ListQueryScreen: undefined;
+	ExpiringSoonScreen: undefined;
 };
 
-export type TabOneParamList = {
-  TabOneScreen: undefined;
+export type AddIngredientParamList = {
+	AddIngredientScreen: undefined;
 };
 
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+export type ListQueryParamList = {
+	ListQueryScreen: undefined;
+};
+
+export type ListParamList = {
+	ExpiringSoonScreen: undefined;
+};
+
+export type Product = {
+	id: string;
+	name: string;
+	category?: string;
+	location?: string;
+	confectionType?: string;
+	expirationDate?: string;
+	dateAdded?: string;
 };

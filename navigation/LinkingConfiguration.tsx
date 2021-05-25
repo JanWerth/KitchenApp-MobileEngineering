@@ -12,14 +12,19 @@ export default {
     screens: {
       Root: {
         screens: {
-          TabOne: {
+          AddIngredientTab: {
             screens: {
-              TabOneScreen: 'one',
+              AddIngredientScreen: 'one',
             },
           },
-          TabTwo: {
+          ListQuery: {
             screens: {
-              TabTwoScreen: 'two',
+              ListQueryScreen: 'two',
+            },
+          },
+          ExpiringSoon: {
+            screens: {
+              ExpiringSoonScreen: 'three',
             },
           },
         },
