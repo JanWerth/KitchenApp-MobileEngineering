@@ -1,4 +1,4 @@
-import * as React from 'React';
+import React from 'react';
 import firebase from 'firebase/app';
 import 'firebase/database';
 // Optionally import the services that you want to use
