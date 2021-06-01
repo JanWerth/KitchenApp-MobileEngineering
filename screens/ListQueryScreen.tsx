@@ -17,59 +17,36 @@ import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../api/fbconfig';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import FlashMessage, {
-	showMessage,
-	hideMessage,
-} from 'react-native-flash-message';
 import { SearchBar } from 'react-native-elements';
-import { Product } from '../types';
+import { categoryItems, categoryPlaceholder } from '../utils/categoryPicker';
+import { locationItems, locationPlaceholder } from '../utils/locationPicker';
+import {
+	confectionItems,
+	confectionPlaceholder,
+} from '../utils/confectionPicker';
+import fil from 'date-fns/esm/locale/fil/index.js';
+import { ProductType } from '../types';
 
 export default function ListQueryScreen() {
-	const [modalVisible, setModalVisible] = useState(false);
-	const [search, setSearch] = useState('');
-	const [ingList, setIngList] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [id, setId] = useState();
-	const [name, setName] = useState('');
-	const [selectedCategory, setSelectedCategory] = useState('Not selected');
-	const categoryItems = [
-		{ label: 'Fruit', value: 'Fruit' },
-		{ label: 'Vegetable', value: 'Vegetable' },
-		{ label: 'Dairy', value: 'Dairy' },
-		{ label: 'Meat', value: 'Meat' },
-		{ label: 'Liquid', value: 'Liquid' },
-	];
-	const categoryPlaceholder = {
-		label: 'Select a category...',
-		value: 'Not selected',
-		color: '#9EA0A4',
-	};
+	const [modalVisible, setModalVisible] = useState<boolean>(false);
+	const [search, setSearch] = useState<string>('');
+	const [masterProductsList, setMasterProductsList] = useState<
+		ProductType[] | undefined
+	>([]);
+	const [filteredProductsList, setFilteredProductsList] = useState<
+		ProductType[] | undefined
+	>([]);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [id, setId] = useState<string>();
+	const [name, setName] = useState<string>('');
+	const [selectedCategory, setSelectedCategory] =
+		useState<string>('Not selected');
 
-	const [selectedLocation, setSelectedLocation] = useState('Not selected');
-	const locationItems = [
-		{ label: 'Fridge', value: 'Fridge' },
-		{ label: 'Freezer', value: 'Freezer' },
-		{ label: 'Pantry', value: 'Pantry' },
-	];
-	const locationPlaceholder = {
-		label: 'Select a location...',
-		value: 'Not selected',
-		color: '#9EA0A4',
-	};
+	const [selectedLocation, setSelectedLocation] =
+		useState<string>('Not selected');
 
 	const [selectedConfectionType, setSelectedConfectionType] =
-		useState('Not selected');
-	const confectionItems = [
-		{ label: 'Fresh', value: 'Fresh' },
-		{ label: 'Canned', value: 'Canned' },
-		{ label: 'Frozen', value: 'Frozen' },
-		{ label: 'Cured', value: 'Cured' },
-	];
-	const confectionPlaceholder = {
-		label: 'Select a confection...',
-		value: 'Not selected',
-		color: '#9EA0A4',
-	};
+		useState<string>('Not selected');
 
 	const today = new Date();
 	//DateTimePicker
@@ -89,7 +66,7 @@ export default function ListQueryScreen() {
 	};
 
 	const showDatepicker = () => {
-		showMode('date');
+		showMode();
 	};
 
 	//Dismiss Keyboard when click outside of TextInput
@@ -98,21 +75,20 @@ export default function ListQueryScreen() {
 	};
 
 	useEffect(() => {
-		const ingRef = firebase.database().ref('Ingredients');
-		console.log(search);
-		ingRef.on('value', (snapshot) => {
-			const ings = snapshot.val();
-			const ingList: Array<Product> = [];
-			for (let id in ings) {
-				ingList.push({ id, ...ings[id] });
+		const productsRef = firebase.database().ref('Ingredients');
+		productsRef.on('value', (snapshot) => {
+			const products = snapshot.val();
+			const productsList: ProductType[] = [];
+			for (let id in products) {
+				productsList.push({ id, ...products[id] });
 			}
-			setIngList(ingList);
+			setMasterProductsList(productsList);
+			setFilteredProductsList(productsList);
 			setLoading(false);
 		});
 	}, []);
 
 	const setData = async (iid: string) => {
-		// console.log(id);
 		await firebase
 			.database()
 			.ref(`Ingredients/${iid}`)
@@ -141,44 +117,37 @@ export default function ListQueryScreen() {
 		} else {
 			dateString = date.toDateString();
 		}
-		await firebase
-			.database()
-			.ref(`Ingredients/${id}`)
-			.update({
-				name: name,
-				category: selectedCategory,
-				location: selectedLocation,
-				confectionType: selectedConfectionType,
-				expirationDate: dateString,
-			})
-			.then(() => {
-				console.log('Data updated');
-				//Doesn't show
-				showMessage({
-					message: 'Success',
-					description: 'Ingredient Saved',
-					type: 'success',
-				});
-			});
+		await firebase.database().ref(`Ingredients/${id}`).update({
+			name: name,
+			category: selectedCategory,
+			location: selectedLocation,
+			confectionType: selectedConfectionType,
+			expirationDate: dateString,
+		});
 	};
 
 	const delIngredient = async (id: string) => {
 		await firebase.database().ref(`/Ingredients/${id}`).remove();
-		console.log(id + ' removed');
 	};
 
-	//Filter function => doesn't work yet
 	const searchFilterFunction = (text: string) => {
 		if (text) {
-			if (ingList) {
-				const newDate = ingList.filter(function (item) {
-					const itemDate: string = item.name
+			if (filteredProductsList) {
+				const newData: ProductType[] = filteredProductsList.filter(function (
+					item
+				) {
+					const itemData: string = item.name
 						? item.name.toUpperCase()
 						: ''.toUpperCase();
 					const textData: string = text.toUpperCase();
 					return itemData.indexOf(textData) > -1;
 				});
+				setFilteredProductsList(newData);
+				setSearch(text);
 			}
+		} else {
+			setFilteredProductsList(masterProductsList);
+			setSearch(text);
 		}
 	};
 
@@ -191,15 +160,17 @@ export default function ListQueryScreen() {
 						round
 						lightTheme
 						platform={'ios'}
-						onChangeText={(text) => {
+						onChangeText={(text: string) => {
+							searchFilterFunction(text);
 							setSearch(text);
+							console.log(text);
 						}}
 						onClear={() => {
 							setSearch('');
+							searchFilterFunction('');
 						}}
 						value={search}
 						containerStyle={styles.searchContainer}
-						inputStyle={styles.searchStyle}
 						onCancel={() => setSearch('')}
 					/>
 				}
@@ -211,8 +182,8 @@ export default function ListQueryScreen() {
 					)
 				}
 				style={styles.list}
-				data={ingList}
-				keyExtractor={(item, id) => id.toString()}
+				data={filteredProductsList}
+				// keyExtractor={(item, id) => id.toString()}
 				renderItem={({ item }) => (
 					<Pressable
 						style={styles.ingButton}
@@ -220,9 +191,7 @@ export default function ListQueryScreen() {
 							setModalVisible(!modalVisible);
 							setId(item.id);
 							setData(item.id);
-							console.log(
-								'Opened Modal of: ID: ' + item.id + ', Name: ' + item.name
-							);
+							console.log(item.id);
 						}}
 					>
 						<View style={styles.listItem}>
@@ -422,13 +391,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexDirection: 'row',
 	},
-	searchIcon: {
-		alignSelf: 'center',
-		justifyContent: 'center',
-		paddingLeft: 5,
-		paddingRight: 5,
-		alignItems: 'center',
-	},
+
 	searchInput: {
 		flex: 1,
 		borderRadius: 25,
@@ -642,5 +605,5 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		borderWidth: 0,
 	},
-	searchStyle: {},
+	searchIcon: { fontSize: 200 },
 });

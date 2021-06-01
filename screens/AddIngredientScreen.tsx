@@ -12,6 +12,12 @@ import {
 	SafeAreaView,
 	StatusBar,
 } from 'react-native';
+import { categoryItems, categoryPlaceholder } from '../utils/categoryPicker';
+import { locationItems, locationPlaceholder } from '../utils/locationPicker';
+import {
+	confectionItems,
+	confectionPlaceholder,
+} from '../utils/confectionPicker';
 import { Ionicons } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -20,49 +26,18 @@ import FlashMessage, {
 	showMessage,
 	hideMessage,
 } from 'react-native-flash-message';
-import { Product } from '../types';
+import { format } from 'date-fns';
 
 export default function AddIngredientScreen() {
-	const [name, setName] = useState('');
-	const [selectedCategory, setSelectedCategory] = useState('Not selected');
-	const categoryItems = [
-		{ label: 'Fruit', value: 'Fruit' },
-		{ label: 'Vegetable', value: 'Vegetable' },
-		{ label: 'Dairy', value: 'Dairy' },
-		{ label: 'Meat', value: 'Meat' },
-		{ label: 'Liquid', value: 'Liquid' },
-	];
-	const categoryPlaceholder = {
-		label: 'Select a category...',
-		value: 'Not selected',
-		color: '#9EA0A4',
-	};
+	const [name, setName] = useState<string>('');
+	const [selectedCategory, setSelectedCategory] =
+		useState<string>('Not selected');
 
-	const [selectedLocation, setSelectedLocation] = useState('Not selected');
-	const locationItems = [
-		{ label: 'Fridge', value: 'Fridge' },
-		{ label: 'Freezer', value: 'Freezer' },
-		{ label: 'Pantry', value: 'Pantry' },
-	];
-	const locationPlaceholder = {
-		label: 'Select a location...',
-		value: 'Not selected',
-		color: '#9EA0A4',
-	};
+	const [selectedLocation, setSelectedLocation] =
+		useState<string>('Not selected');
 
 	const [selectedConfectionType, setSelectedConfectionType] =
 		useState('Not selected');
-	const confectionItems = [
-		{ label: 'Fresh', value: 'Fresh' },
-		{ label: 'Canned', value: 'Canned' },
-		{ label: 'Frozen', value: 'Frozen' },
-		{ label: 'Cured', value: 'Cured' },
-	];
-	const confectionPlaceholder = {
-		label: 'Select a confection...',
-		value: 'Not selected',
-		color: '#9EA0A4',
-	};
 
 	const today = new Date();
 	//DateTimePicker
@@ -82,7 +57,7 @@ export default function AddIngredientScreen() {
 	};
 
 	const showDatepicker = () => {
-		showMode('date');
+		showMode();
 	};
 
 	//Dismiss Keyboard when click outside of TextInput
@@ -108,9 +83,9 @@ export default function AddIngredientScreen() {
 				location: selectedLocation,
 				confectionType: selectedConfectionType,
 				expirationDate: dateString,
+				expiry: format(date!, "yyyy-MM-dd'T'HH:mm"),
 			};
 			ingredientRef.push(ing);
-			console.log('Data saved');
 			Keyboard.dismiss();
 			showMessage({
 				message: 'Success',
@@ -148,7 +123,6 @@ export default function AddIngredientScreen() {
 							<RNPickerSelect
 								placeholder={categoryPlaceholder}
 								onValueChange={(value) => setSelectedCategory(value)}
-								// style={styles.pickerSelectStyles}
 								items={categoryItems}
 								useNativeAndroidPickerStyle={false}
 								value={selectedCategory}
@@ -187,7 +161,6 @@ export default function AddIngredientScreen() {
 							<RNPickerSelect
 								placeholder={confectionPlaceholder}
 								onValueChange={(value) => setSelectedConfectionType(value)}
-								// style={styles.pickerSelectStyles}
 								items={confectionItems}
 								useNativeAndroidPickerStyle={false}
 								value={selectedConfectionType}
