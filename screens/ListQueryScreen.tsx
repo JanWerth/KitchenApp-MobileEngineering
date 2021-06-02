@@ -13,22 +13,29 @@ import {
 	ActivityIndicator,
 	SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {
+	Ionicons,
+	MaterialCommunityIcons,
+	MaterialIcons,
+} from '@expo/vector-icons';
 import { firebase } from '../api/fbconfig';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, ButtonGroup } from 'react-native-elements';
 import { categoryItems, categoryPlaceholder } from '../utils/categoryPicker';
 import { locationItems, locationPlaceholder } from '../utils/locationPicker';
 import {
 	confectionItems,
 	confectionPlaceholder,
 } from '../utils/confectionPicker';
-import fil from 'date-fns/esm/locale/fil/index.js';
 import { ProductType } from '../types';
+import { RadioButton } from 'react-native-paper';
+import { filterModalStyles } from '../constants/filterModalStyle';
 
 export default function ListQueryScreen() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
+	const [filterModalVisible, setfilterModalVisible] = useState<boolean>(false);
+	const [filterActive, setFilterActive] = useState<boolean>(false);
 	const [search, setSearch] = useState<string>('');
 	const [masterProductsList, setMasterProductsList] = useState<
 		ProductType[] | undefined
@@ -69,10 +76,16 @@ export default function ListQueryScreen() {
 		showMode();
 	};
 
-	//Dismiss Keyboard when click outside of TextInput
-	const dismissKeyboard = () => {
-		Keyboard.dismiss();
+	const buttons = ['Category', 'Location', 'Confection Type', 'Special'];
+	const [activeTab, setActiveTab] = useState<string>('Category');
+	const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+	const updateIndex = (index: number) => {
+		setSelectedIndex(index);
+		setActiveTab(buttons[index]);
 	};
+
+	const [value, setValue] = useState<string>('');
 
 	useEffect(() => {
 		const productsRef = firebase.database().ref('Ingredients');
@@ -131,11 +144,9 @@ export default function ListQueryScreen() {
 	};
 
 	const searchFilterFunction = (text: string) => {
-		if (text) {
+		if (text && text != '') {
 			if (filteredProductsList) {
-				const newData: ProductType[] = filteredProductsList.filter(function (
-					item
-				) {
+				const newData: ProductType[] = filteredProductsList.filter((item) => {
 					const itemData: string = item.name
 						? item.name.toUpperCase()
 						: ''.toUpperCase();
@@ -151,29 +162,104 @@ export default function ListQueryScreen() {
 		}
 	};
 
+	const filterFuntion = (text: string) => {
+		if (text) {
+			if (filteredProductsList) {
+				if (activeTab === 'Category') {
+					const newData: ProductType[] = filteredProductsList.filter((item) => {
+						const itemData: string = item.category?.toUpperCase();
+						const filterData: string = text.toUpperCase();
+						return itemData.indexOf(filterData) > -1;
+					});
+					setFilteredProductsList(newData);
+					setFilterActive(!filterActive);
+				}
+				if (activeTab === 'Location') {
+					const newData: ProductType[] = filteredProductsList.filter((item) => {
+						const itemData: string = item.location?.toUpperCase();
+						const filterData: string = text.toUpperCase();
+						return itemData.indexOf(filterData) > -1;
+					});
+					setFilteredProductsList(newData);
+					setFilterActive(!filterActive);
+				}
+				if (activeTab === 'Confection Type') {
+					const newData: ProductType[] = filteredProductsList.filter((item) => {
+						const itemData: string = item.confectionType?.toUpperCase();
+						const filterData: string = text.toUpperCase();
+						return itemData.indexOf(filterData) > -1;
+					});
+					setFilteredProductsList(newData);
+					setFilterActive(!filterActive);
+				} else {
+					const newData: ProductType[] = filteredProductsList.filter((item) => {
+						const itemData: string =
+							item.confectionType.toUpperCase() &&
+							item.category.toUpperCase() &&
+							item.location.toUpperCase() &&
+							item.expirationDate.toUpperCase();
+						const filterData: string = text.toUpperCase();
+						return itemData.indexOf(filterData) > -1;
+					});
+					setFilteredProductsList(newData);
+					setFilterActive(!filterActive);
+				}
+			}
+		} else {
+			setFilteredProductsList(masterProductsList);
+			setFilterActive(!filterActive);
+		}
+	};
+
 	return (
 		<SafeAreaView style={styles.centeredView}>
 			<FlatList
 				ListHeaderComponent={
-					<SearchBar
-						placeholder='Type Here...'
-						round
-						lightTheme
-						platform={'ios'}
-						onChangeText={(text: string) => {
-							searchFilterFunction(text);
-							setSearch(text);
-							console.log(text);
-						}}
-						onClear={() => {
-							setSearch('');
-							searchFilterFunction('');
-						}}
-						value={search}
-						containerStyle={styles.searchContainer}
-						onCancel={() => setSearch('')}
-					/>
+					<View style={styles.filterRow}>
+						<View style={styles.searchBar}>
+							<SearchBar
+								placeholder='Type Here...'
+								round
+								lightTheme
+								platform={'ios'}
+								onChangeText={(text: string) => {
+									searchFilterFunction(text);
+									setSearch(text);
+								}}
+								onClear={() => {
+									setSearch('');
+									searchFilterFunction('');
+								}}
+								value={search}
+								containerStyle={styles.searchContainer}
+								onCancel={() => setSearch('')}
+							/>
+						</View>
+						<View style={styles.filterIcon}>
+							{!filterActive ? (
+								// <Pressable onPress={() => categoryFilterFuntion('Fruit')}>
+								<Pressable
+									onPress={() => setfilterModalVisible(!filterModalVisible)}
+								>
+									<MaterialCommunityIcons
+										name='filter-variant'
+										size={32}
+										color='black'
+									/>
+								</Pressable>
+							) : (
+								<Pressable onPress={() => filterFuntion('')}>
+									<MaterialCommunityIcons
+										name='filter-variant-remove'
+										size={32}
+										color='black'
+									/>
+								</Pressable>
+							)}
+						</View>
+					</View>
 				}
+				ListHeaderComponentStyle={styles.filterRow}
 				ListFooterComponent={
 					loading ? (
 						<ActivityIndicator size='large' color='#0000ff' />
@@ -234,6 +320,185 @@ export default function ListQueryScreen() {
 			<Modal
 				animationType='none'
 				transparent={true}
+				visible={filterModalVisible}
+				onRequestClose={() => {
+					setModalVisible(!filterModalVisible);
+				}}
+			>
+				<View style={styles.centeredView}>
+					<View style={styles.filterModalView}>
+						<View style={styles.filterModalTopRow}>
+							<View style={styles.filterModalCloseIcon}>
+								<Ionicons
+									name={'ios-close-outline'}
+									size={28}
+									onPress={() => setfilterModalVisible(!filterModalVisible)}
+								/>
+							</View>
+							<View style={styles.filterModalTitle}>
+								<Text style={styles.filterModalTitleText}>Filter</Text>
+							</View>
+							<View style={styles.filterModalFilterIcon}>
+								<MaterialCommunityIcons name={'filter-variant'} size={28} />
+							</View>
+						</View>
+						<View style={styles.divider}></View>
+						<View>
+							<ButtonGroup
+								buttons={buttons}
+								selectedIndex={selectedIndex}
+								onPress={updateIndex}
+								containerStyle={{ width: '90%' }}
+							/>
+						</View>
+
+						{activeTab === 'Category' && (
+							<View style={styles.filterPicker}>
+								<RadioButton.Group
+									onValueChange={(newValue) => setValue(newValue)}
+									value={value}
+								>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Fruit'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Fruit</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Vegetable'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Vegetable</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Dairy'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Dairy</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Meat'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Meat</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Liquid'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Liquid</Text>
+									</View>
+								</RadioButton.Group>
+							</View>
+						)}
+						{activeTab === 'Location' && (
+							<View style={styles.filterPicker}>
+								<RadioButton.Group
+									onValueChange={(newValue) => setValue(newValue)}
+									value={value}
+								>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Fridge'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Fridge</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Freezer'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Freezer</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Pantry'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Pantry</Text>
+									</View>
+								</RadioButton.Group>
+							</View>
+						)}
+						{activeTab === 'Confection Type' && (
+							<View style={styles.filterPicker}>
+								<RadioButton.Group
+									onValueChange={(newValue) => setValue(newValue)}
+									value={value}
+								>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Fresh'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Fresh</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Canned'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Canned</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Frozen'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Frozen</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Cured'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Cured</Text>
+									</View>
+								</RadioButton.Group>
+							</View>
+						)}
+						{activeTab === 'Special' && (
+							<View style={styles.filterPicker}>
+								<RadioButton.Group
+									onValueChange={(newValue) => setValue(newValue)}
+									value={value}
+								>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android
+											value='Not selected'
+											style={styles.radioButton}
+										/>
+										<Text style={styles.radioButtonText}>Missing Data</Text>
+									</View>
+								</RadioButton.Group>
+							</View>
+						)}
+
+						<View style={styles.modalButtonRow}>
+							<Pressable
+								style={[styles.button, styles.buttonClose]}
+								onPress={() => {
+									setfilterModalVisible(!filterModalVisible);
+
+									filterFuntion(value);
+								}}
+							>
+								<Text style={styles.textStyle}>Hide Modal</Text>
+							</Pressable>
+						</View>
+					</View>
+				</View>
+			</Modal>
+
+			<Modal
+				animationType='none'
+				transparent={true}
 				visible={modalVisible}
 				onRequestClose={() => {
 					setModalVisible(!modalVisible);
@@ -241,7 +506,21 @@ export default function ListQueryScreen() {
 			>
 				<View style={styles.centeredView}>
 					<View style={styles.modalView}>
-						<Text style={styles.modalTitleText}>Edit Ingredient!</Text>
+						<View style={styles.modalTopRow}>
+							<View style={styles.modalCloseIcon}>
+								<Ionicons
+									name={'ios-close-outline'}
+									size={28}
+									onPress={() => setModalVisible(!modalVisible)}
+								/>
+							</View>
+							<View style={styles.modalTitle}>
+								<Text style={styles.modalTitleText}>Edit Ingredient!</Text>
+							</View>
+							<View style={styles.modalEditIcon}>
+								<MaterialIcons name={'edit'} size={25} />
+							</View>
+						</View>
 						<View style={styles.divider}></View>
 						<ScrollView style={styles.scrollStyle}>
 							<Text style={styles.Label}>Enter Item Name:</Text>
@@ -384,8 +663,23 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: '100%',
 	},
+	filterRow: {
+		flex: 5,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	searchBar: {
+		flex: 4,
+	},
+	filter: {
+		flex: 1,
+	},
+	filterIcon: {
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
 	search: {
-		// backgroundColor: 'black',
 		paddingTop: 15,
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -474,14 +768,41 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	modalView: {
-		margin: 20,
+		padding: 10,
 		backgroundColor: 'white',
 		borderRadius: 20,
 		alignItems: 'center',
 		borderColor: 'black',
 		borderWidth: 0,
-		height: '100%',
-		width: '100%',
+		width: '90%',
+		height: '90%',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	modalTopRow: {
+		flexDirection: 'row',
+		padding: 10,
+	},
+	modalCloseIcon: {
+		flex: 1,
+		alignSelf: 'flex-start',
+		justifyContent: 'center',
+	},
+	modalTitle: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	modalEditIcon: {
+		flex: 1,
+		alignItems: 'flex-end',
+		justifyContent: 'center',
 	},
 	button: {
 		borderRadius: 20,
@@ -500,7 +821,6 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: 'bold',
 		marginBottom: 1,
-		padding: 10,
 	},
 	divider: {
 		width: '100%',
@@ -605,5 +925,68 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		borderWidth: 0,
 	},
-	searchIcon: { fontSize: 200 },
+	filterModalView: {
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 10,
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+		width: '90%',
+		height: '70%',
+	},
+	filterModalTopRow: {
+		flexDirection: 'row',
+		padding: 10,
+	},
+	filterModalCloseIcon: {
+		flex: 1,
+		alignSelf: 'flex-start',
+	},
+	filterModalTitle: {
+		flex: 1,
+		alignSelf: 'center',
+	},
+	filterModalTitleText: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		marginBottom: 1,
+		alignSelf: 'center',
+	},
+	filterModalFilterIcon: {
+		flex: 1,
+		alignItems: 'flex-end',
+	},
+	filterTabContainer: {
+		width: '90%',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingHorizontal: 10,
+		alignItems: 'center',
+		marginTop: 10,
+	},
+	filterTabComponent: {
+		fontSize: 18,
+	},
+	filterPicker: {
+		width: '90%',
+	},
+	radioButtonView: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	radioButton: {
+		backgroundColor: 'yellow',
+	},
+	radioButtonText: {
+		fontSize: 18,
+		alignSelf: 'center',
+		justifyContent: 'center',
+	},
 });

@@ -29,9 +29,9 @@ export type ListParamList = {
 export type ProductType = {
 	id: string;
 	name: string;
-	category?: string;
-	location?: string;
-	confectionType?: string;
-	expirationDate?: string;
+	category: string;
+	location: string;
+	confectionType: string;
+	expirationDate: string;
 	dateAdded?: string;
 };
