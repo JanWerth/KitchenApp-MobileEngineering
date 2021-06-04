@@ -71,19 +71,23 @@ export default function AddIngredientScreen() {
 			alert('Name is required');
 		} else {
 			let dateString;
+			let expiry;
 			if (date.toDateString() === today.toDateString()) {
 				dateString = 'Not selected';
+				expiry = 'Not selected';
 			} else {
 				dateString = date.toDateString();
+				expiry = format(date, "yyyy-MM-dd'T'HH:mm");
 			}
+			let now = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 			const ingredientRef = firebase.database().ref(`/Ingredients`);
 			const ing = {
 				name: name,
 				category: selectedCategory,
 				location: selectedLocation,
 				confectionType: selectedConfectionType,
-				expirationDate: dateString,
-				expiry: format(date!, "yyyy-MM-dd'T'HH:mm"),
+				expirationDate: expiry,
+				addedOn: now,
 			};
 			ingredientRef.push(ing);
 			Keyboard.dismiss();

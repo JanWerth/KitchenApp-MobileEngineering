@@ -30,7 +30,7 @@ import {
 } from '../utils/confectionPicker';
 import { ProductType } from '../types';
 import { RadioButton } from 'react-native-paper';
-import { filterModalStyles } from '../constants/filterModalStyle';
+import { formatDistanceToNow, add } from 'date-fns';
 
 export default function ListQueryScreen() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -56,6 +56,7 @@ export default function ListQueryScreen() {
 		useState<string>('Not selected');
 
 	const today = new Date();
+	const tomorrow = add(today, { days: 1 });
 	//DateTimePicker
 	const [date, setDate] = useState(new Date());
 	const [mode, setMode] = useState('date');
@@ -86,6 +87,10 @@ export default function ListQueryScreen() {
 	};
 
 	const [value, setValue] = useState<string>('');
+
+	const nothingSelected = (): boolean => {
+		return value === '';
+	};
 
 	useEffect(() => {
 		const productsRef = firebase.database().ref('Ingredients');
@@ -155,6 +160,7 @@ export default function ListQueryScreen() {
 				});
 				setFilteredProductsList(newData);
 				setSearch(text);
+				setFilterActive(true);
 			}
 		} else {
 			setFilteredProductsList(masterProductsList);
@@ -228,7 +234,6 @@ export default function ListQueryScreen() {
 								}}
 								onClear={() => {
 									setSearch('');
-									searchFilterFunction('');
 								}}
 								value={search}
 								containerStyle={styles.searchContainer}
@@ -248,7 +253,13 @@ export default function ListQueryScreen() {
 									/>
 								</Pressable>
 							) : (
-								<Pressable onPress={() => filterFuntion('')}>
+								<Pressable
+									onPress={() => {
+										filterFuntion('');
+										setValue('');
+										setSearch('');
+									}}
+								>
 									<MaterialCommunityIcons
 										name='filter-variant-remove'
 										size={32}
@@ -277,7 +288,6 @@ export default function ListQueryScreen() {
 							setModalVisible(!modalVisible);
 							setId(item.id);
 							setData(item.id);
-							console.log(item.id);
 						}}
 					>
 						<View style={styles.listItem}>
@@ -310,7 +320,17 @@ export default function ListQueryScreen() {
 							</View>
 							<View style={styles.expirationDateRow}>
 								<Text style={styles.expirationDate}>
-									Expires on: {item.expirationDate}
+									{item.expirationDate != 'Not selected' && (
+										<Text>
+											Expires{' '}
+											{formatDistanceToNow(new Date(item.expirationDate), {
+												addSuffix: true,
+											})}
+										</Text>
+									)}
+									{item.expirationDate === 'Not selected' && (
+										<Text>No expiration date selected</Text>
+									)}
 								</Text>
 							</View>
 						</View>
@@ -343,153 +363,117 @@ export default function ListQueryScreen() {
 							</View>
 						</View>
 						<View style={styles.divider}></View>
-						<View>
-							<ButtonGroup
-								buttons={buttons}
-								selectedIndex={selectedIndex}
-								onPress={updateIndex}
-								containerStyle={{ width: '90%' }}
-							/>
+						<View style={{ width: '100%' }}>
+							<View>
+								<ButtonGroup
+									buttons={buttons}
+									selectedIndex={selectedIndex}
+									onPress={updateIndex}
+									containerStyle={{ width: '90%' }}
+								/>
+							</View>
+
+							{activeTab === 'Category' && (
+								<View style={styles.filterPicker}>
+									<RadioButton.Group
+										onValueChange={(newValue) => setValue(newValue)}
+										value={value}
+									>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Fruit' />
+											<Text style={styles.radioButtonText}>Fruit</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Vegetable' />
+											<Text style={styles.radioButtonText}>Vegetable</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Dairy' />
+											<Text style={styles.radioButtonText}>Dairy</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Meat' />
+											<Text style={styles.radioButtonText}>Meat</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Liquid' />
+											<Text style={styles.radioButtonText}>Liquid</Text>
+										</View>
+									</RadioButton.Group>
+								</View>
+							)}
+							{activeTab === 'Location' && (
+								<View style={styles.filterPicker}>
+									<RadioButton.Group
+										onValueChange={(newValue) => setValue(newValue)}
+										value={value}
+									>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Fridge' />
+											<Text style={styles.radioButtonText}>Fridge</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Freezer' />
+											<Text style={styles.radioButtonText}>Freezer</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Pantry' />
+											<Text style={styles.radioButtonText}>Pantry</Text>
+										</View>
+									</RadioButton.Group>
+								</View>
+							)}
+							{activeTab === 'Confection Type' && (
+								<View style={styles.filterPicker}>
+									<RadioButton.Group
+										onValueChange={(newValue) => setValue(newValue)}
+										value={value}
+									>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Fresh' />
+											<Text style={styles.radioButtonText}>Fresh</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Canned' />
+											<Text style={styles.radioButtonText}>Canned</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Frozen' />
+											<Text style={styles.radioButtonText}>Frozen</Text>
+										</View>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Cured' />
+											<Text style={styles.radioButtonText}>Cured</Text>
+										</View>
+									</RadioButton.Group>
+								</View>
+							)}
+							{activeTab === 'Special' && (
+								<View style={styles.filterPicker}>
+									<RadioButton.Group
+										onValueChange={(newValue) => setValue(newValue)}
+										value={value}
+									>
+										<View style={styles.radioButtonView}>
+											<RadioButton.Android value='Not selected' />
+											<Text style={styles.radioButtonText}>Missing Data</Text>
+										</View>
+									</RadioButton.Group>
+								</View>
+							)}
 						</View>
 
-						{activeTab === 'Category' && (
-							<View style={styles.filterPicker}>
-								<RadioButton.Group
-									onValueChange={(newValue) => setValue(newValue)}
-									value={value}
-								>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Fruit'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Fruit</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Vegetable'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Vegetable</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Dairy'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Dairy</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Meat'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Meat</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Liquid'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Liquid</Text>
-									</View>
-								</RadioButton.Group>
-							</View>
-						)}
-						{activeTab === 'Location' && (
-							<View style={styles.filterPicker}>
-								<RadioButton.Group
-									onValueChange={(newValue) => setValue(newValue)}
-									value={value}
-								>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Fridge'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Fridge</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Freezer'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Freezer</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Pantry'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Pantry</Text>
-									</View>
-								</RadioButton.Group>
-							</View>
-						)}
-						{activeTab === 'Confection Type' && (
-							<View style={styles.filterPicker}>
-								<RadioButton.Group
-									onValueChange={(newValue) => setValue(newValue)}
-									value={value}
-								>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Fresh'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Fresh</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Canned'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Canned</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Frozen'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Frozen</Text>
-									</View>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Cured'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Cured</Text>
-									</View>
-								</RadioButton.Group>
-							</View>
-						)}
-						{activeTab === 'Special' && (
-							<View style={styles.filterPicker}>
-								<RadioButton.Group
-									onValueChange={(newValue) => setValue(newValue)}
-									value={value}
-								>
-									<View style={styles.radioButtonView}>
-										<RadioButton.Android
-											value='Not selected'
-											style={styles.radioButton}
-										/>
-										<Text style={styles.radioButtonText}>Missing Data</Text>
-									</View>
-								</RadioButton.Group>
-							</View>
-						)}
-
-						<View style={styles.modalButtonRow}>
+						<View style={styles.filterModalButtonRow}>
 							<Pressable
-								style={[styles.button, styles.buttonClose]}
+								style={[styles.button, styles.filterButtonClose]}
 								onPress={() => {
 									setfilterModalVisible(!filterModalVisible);
 
 									filterFuntion(value);
 								}}
+								disabled={nothingSelected()}
 							>
-								<Text style={styles.textStyle}>Hide Modal</Text>
+								<Text style={styles.textStyle}>Apply Filter</Text>
 							</Pressable>
 						</View>
 					</View>
@@ -976,17 +960,29 @@ const styles = StyleSheet.create({
 	},
 	filterPicker: {
 		width: '90%',
+		alignSelf: 'center',
 	},
 	radioButtonView: {
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-	radioButton: {
-		backgroundColor: 'yellow',
-	},
 	radioButtonText: {
 		fontSize: 18,
 		alignSelf: 'center',
+		justifyContent: 'center',
+	},
+	filterModalButtonRow: {
+		position: 'absolute',
+		bottom: 20,
+		alignItems: 'center',
+		width: '100%',
+	},
+	filterButtonClose: {
+		width: '40%',
+		height: 50,
+		backgroundColor: '#353fcc',
+		borderRadius: 75,
+		alignItems: 'center',
 		justifyContent: 'center',
 	},
 });
