@@ -26,7 +26,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ProductType } from '../types';
 import { firebase } from '../api/fbconfig';
-import { formatDistanceToNow, add } from 'date-fns';
+import { formatDistanceToNow, add, format, isBefore } from 'date-fns';
 import { categoryItems, categoryPlaceholder } from '../utils/categoryPicker';
 import { locationItems, locationPlaceholder } from '../utils/locationPicker';
 import {
@@ -34,16 +34,18 @@ import {
 	confectionPlaceholder,
 } from '../utils/confectionPicker';
 import { ButtonGroup } from 'react-native-elements';
+import { Item } from 'react-native-paper/lib/typescript/components/List/List';
+import { cos } from 'react-native-reanimated';
 
 export default function ExpiringSoonScreen() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
 	const [id, setId] = useState<string>();
 
-	const [masterProductsList, setMasterProductsList] = useState<
-		ProductType[] | undefined
-	>([]);
+	const [masterProductsList, setMasterProductsList] = useState<ProductType[]>(
+		[]
+	);
 	const [filteredProductsList, setFilteredProductsList] = useState<
-		ProductType[] | undefined
+		ProductType[]
 	>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 
@@ -58,7 +60,9 @@ export default function ExpiringSoonScreen() {
 		useState<string>('Not selected');
 
 	const today = new Date();
-	const tomorrow = add(today, { days: 1 });
+	const oneDay = format(add(today, { days: 1 }), "yyyy-MM-dd'T'HH:mm");
+	const threeDays = format(add(today, { days: 3 }), "yyyy-MM-dd'T'HH:mm");
+	const oneWeek = format(add(today, { weeks: 1 }), "yyyy-MM-dd'T'HH:mm");
 	//DateTimePicker
 	const [date, setDate] = useState(new Date());
 	const [mode, setMode] = useState('date');
@@ -86,6 +90,7 @@ export default function ExpiringSoonScreen() {
 	const updateIndex = (index: number) => {
 		setSelectedIndex(index);
 		setActiveTab(buttons[index]);
+		expirationDateFilterFunction(buttons[index]);
 	};
 
 	useEffect(() => {
@@ -97,7 +102,7 @@ export default function ExpiringSoonScreen() {
 				productsList.push({ id, ...products[id] });
 			}
 			setMasterProductsList(productsList);
-			setFilteredProductsList(productsList);
+			expirationDateFilterFunction(buttons[0]);
 			setLoading(false);
 		});
 	}, []);
@@ -142,6 +147,35 @@ export default function ExpiringSoonScreen() {
 
 	const delIngredient = async (id: string) => {
 		await firebase.database().ref(`/Ingredients/${id}`).remove();
+	};
+
+	const expirationDateFilterFunction = (range: string) => {
+		if (filteredProductsList) {
+			if (range === buttons[0]) {
+				const newData: ProductType[] = masterProductsList.filter((item) => {
+					if (isBefore(new Date(item.expirationDate), new Date(oneDay))) {
+						return item.expirationDate;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+			if (range === buttons[1]) {
+				const newData: ProductType[] = masterProductsList.filter((item) => {
+					if (isBefore(new Date(item.expirationDate), new Date(threeDays))) {
+						return item.expirationDate;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+			if (range === buttons[2]) {
+				const newData: ProductType[] = masterProductsList.filter((item) => {
+					if (isBefore(new Date(item.expirationDate), new Date(oneWeek))) {
+						return item.expirationDate;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+		}
 	};
 
 	return (

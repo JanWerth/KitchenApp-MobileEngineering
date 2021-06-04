@@ -33,6 +33,5 @@ export type ProductType = {
 	location: string;
 	confectionType: string;
 	expirationDate: string;
-	expiry?: string;
 	dateAdded: string;
 };
