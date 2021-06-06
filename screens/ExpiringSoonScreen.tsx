@@ -93,20 +93,6 @@ export default function ExpiringSoonScreen() {
 		expirationDateFilterFunction(buttons[index]);
 	};
 
-	useEffect(() => {
-		const productsRef = firebase.database().ref('Ingredients');
-		productsRef.on('value', (snapshot) => {
-			const products = snapshot.val();
-			const productsList: ProductType[] = [];
-			for (let id in products) {
-				productsList.push({ id, ...products[id] });
-			}
-			setMasterProductsList(productsList);
-			expirationDateFilterFunction(buttons[0]);
-			setLoading(false);
-		});
-	}, []);
-
 	const setData = async (iid: string) => {
 		await firebase
 			.database()
@@ -177,6 +163,21 @@ export default function ExpiringSoonScreen() {
 			}
 		}
 	};
+
+	useEffect(() => {
+		const productsRef = firebase.database().ref('Ingredients');
+		productsRef.on('value', (snapshot) => {
+			const products = snapshot.val();
+			const productsList: ProductType[] = [];
+			for (let id in products) {
+				productsList.push({ id, ...products[id] });
+			}
+			setMasterProductsList(productsList);
+			setFilteredProductsList(productsList);
+			expirationDateFilterFunction(buttons[0]);
+			setLoading(false);
+		});
+	}, []);
 
 	return (
 		<SafeAreaView style={styles.centeredView}>

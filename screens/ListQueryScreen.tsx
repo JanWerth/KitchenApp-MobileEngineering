@@ -17,6 +17,7 @@ import {
 	Ionicons,
 	MaterialCommunityIcons,
 	MaterialIcons,
+	FontAwesome5,
 } from '@expo/vector-icons';
 import { firebase } from '../api/fbconfig';
 import RNPickerSelect from 'react-native-picker-select';
@@ -29,8 +30,9 @@ import {
 	confectionPlaceholder,
 } from '../utils/confectionPicker';
 import { ProductType } from '../types';
-import { RadioButton } from 'react-native-paper';
-import { formatDistanceToNow, add } from 'date-fns';
+import { RadioButton, ProgressBar } from 'react-native-paper';
+import { formatDistanceToNow, add, format } from 'date-fns';
+import { Item } from 'react-native-paper/lib/typescript/components/List/List';
 
 export default function ListQueryScreen() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -54,6 +56,8 @@ export default function ListQueryScreen() {
 
 	const [selectedConfectionType, setSelectedConfectionType] =
 		useState<string>('Not selected');
+
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	const today = new Date();
 	const tomorrow = add(today, { days: 1 });
@@ -117,6 +121,7 @@ export default function ListQueryScreen() {
 				setSelectedCategory(ingredient.category);
 				setSelectedLocation(ingredient.location);
 				setSelectedConfectionType(ingredient.confectionType);
+				setIsOpen(ingredient.open);
 				if (ingredient.expirationDate === 'Not selected') {
 					setDate(new Date());
 				} else {
@@ -142,7 +147,15 @@ export default function ListQueryScreen() {
 			location: selectedLocation,
 			confectionType: selectedConfectionType,
 			expirationDate: dateString,
+			open: isOpen,
 		});
+	};
+
+	const checkIngredient = async (id: string) => {
+		await firebase
+			.database()
+			.ref(`Ingredients/${id}`)
+			.update({ editedOn: format(new Date(), "yyyy-MM-dd'T'HH:mm") });
 	};
 
 	const delIngredient = async (id: string) => {
@@ -166,6 +179,7 @@ export default function ListQueryScreen() {
 		} else {
 			setFilteredProductsList(masterProductsList);
 			setSearch(text);
+			setFilterActive(false);
 		}
 	};
 
@@ -201,9 +215,9 @@ export default function ListQueryScreen() {
 				} else {
 					const newData: ProductType[] = filteredProductsList.filter((item) => {
 						const itemData: string =
-							item.confectionType.toUpperCase() &&
-							item.category.toUpperCase() &&
-							item.location.toUpperCase() &&
+							item.confectionType.toUpperCase() ||
+							item.category.toUpperCase() ||
+							item.location.toUpperCase() ||
 							item.expirationDate.toUpperCase();
 						const filterData: string = text.toUpperCase();
 						return itemData.indexOf(filterData) > -1;
@@ -215,6 +229,40 @@ export default function ListQueryScreen() {
 		} else {
 			setFilteredProductsList(masterProductsList);
 			setFilterActive(!filterActive);
+		}
+	};
+
+	const progress = (p: string): number => {
+		if (p === 'Barely Ripe') {
+			return 0.25;
+		}
+		if (p === 'Ripe') {
+			return 0.5;
+		}
+		if (p === 'Very Ripe') {
+			return 0.75;
+		}
+		if (p === 'Overripe') {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+
+	const progressc = (p: string): string => {
+		if (p === 'Barely Ripe') {
+			return 'green';
+		}
+		if (p === 'Ripe') {
+			return 'gold';
+		}
+		if (p === 'Very Ripe') {
+			return 'darkorange';
+		}
+		if (p === 'Overripe') {
+			return 'red';
+		} else {
+			return 'blue';
 		}
 	};
 
@@ -289,11 +337,32 @@ export default function ListQueryScreen() {
 							setModalVisible(!modalVisible);
 							setId(item.id);
 							setData(item.id);
+							checkIngredient(item.id);
 						}}
 					>
 						<View style={styles.listItem}>
 							<View style={styles.titleRow}>
 								<Text style={styles.itemName}>{item.name}</Text>
+								{item.frozen ? (
+									<Ionicons
+										style={styles.frozenicon}
+										name='ios-snow'
+										size={24}
+										color='black'
+									/>
+								) : (
+									<></>
+								)}
+								{item.open ? (
+									<FontAwesome5
+										style={styles.openIcon}
+										name='box-open'
+										size={24}
+										color='black'
+									/>
+								) : (
+									<></>
+								)}
 								<Pressable onPress={() => delIngredient(item.id)}>
 									<Ionicons
 										style={styles.trashIcon}
@@ -303,6 +372,35 @@ export default function ListQueryScreen() {
 									/>
 								</Pressable>
 							</View>
+							<View style={styles.addedDateRow}>
+								<Text style={styles.addedOnDate}>
+									<Text>
+										Added{' '}
+										{formatDistanceToNow(new Date(item.addedOn), {
+											addSuffix: true,
+										})}
+									</Text>
+								</Text>
+							</View>
+							{item.ripeness != 'Not selected' ? (
+								<View>
+									<View style={styles.infoRow}>
+										<View style={styles.categoryColumn}>
+											<Text>Ripeness:</Text>
+											<View style={{ width: '90%' }}>
+												<ProgressBar
+													progress={progress(item.ripeness)}
+													color={progressc(item.ripeness)}
+												/>
+											</View>
+											<Text style={styles.category}>{item.ripeness}</Text>
+										</View>
+									</View>
+								</View>
+							) : (
+								<></>
+							)}
+
 							<View style={styles.infoRow}>
 								<View style={styles.categoryColumn}>
 									<Text>Category:</Text>
@@ -318,6 +416,14 @@ export default function ListQueryScreen() {
 										{item.confectionType}
 									</Text>
 								</View>
+							</View>
+							<View style={styles.lastCheckedRow}>
+								<Text style={styles.editedDate}>
+									Last checked{' '}
+									{formatDistanceToNow(new Date(item.editedOn), {
+										addSuffix: true,
+									})}
+								</Text>
 							</View>
 							<View style={styles.expirationDateRow}>
 								<Text style={styles.expirationDate}>
@@ -587,6 +693,13 @@ export default function ListQueryScreen() {
 									minimumDate={today}
 								/>
 							)}
+							{!isOpen ? (
+								<Pressable onPress={() => setIsOpen(true)}>
+									<FontAwesome5 name='box' size={24} color='black' />
+								</Pressable>
+							) : (
+								<FontAwesome5 name='box-open' size={24} color='black' />
+							)}
 						</ScrollView>
 						<View style={styles.modalFooter}>
 							<View style={styles.divider}></View>
@@ -696,9 +809,23 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: 'bold',
 	},
+	frozenicon: {
+		marginRight: 5,
+	},
+	openIcon: {
+		marginRight: 5,
+	},
 	trashIcon: {
 		flex: 1,
 		marginRight: 5,
+	},
+	addedDateRow: {
+		flex: 1,
+		margin: 5,
+	},
+	addedOnDate: {
+		fontStyle: 'italic',
+		fontSize: 10,
 	},
 	infoRow: {
 		flex: 1,
@@ -738,6 +865,14 @@ const styles = StyleSheet.create({
 	confectionType: {
 		flex: 1,
 		alignItems: 'center',
+	},
+	lastCheckedRow: {
+		flex: 1,
+		margin: 5,
+	},
+	editedDate: {
+		fontStyle: 'italic',
+		fontSize: 10,
 	},
 	expirationDateRow: {
 		flex: 1,
