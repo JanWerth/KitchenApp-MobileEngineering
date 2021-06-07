@@ -1,0 +1,287 @@
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { formatDistanceToNow } from 'date-fns';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { ProgressBar } from 'react-native-paper';
+import { listitemProps } from '../../types';
+import { checkIngredient } from '../../api/checkIngredient';
+import { deleteIngrediet } from '../../api/deleteIngredient';
+
+const Listitem = ({ data, onPress }: listitemProps) => {
+	const progress = (p: string): number => {
+		if (p === 'Barely Ripe') {
+			return 0.25;
+		}
+		if (p === 'Ripe') {
+			return 0.5;
+		}
+		if (p === 'Very Ripe') {
+			return 0.75;
+		}
+		if (p === 'Overripe') {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+
+	const progressc = (p: string): string => {
+		if (p === 'Barely Ripe') {
+			return 'green';
+		}
+		if (p === 'Ripe') {
+			return 'gold';
+		}
+		if (p === 'Very Ripe') {
+			return 'darkorange';
+		}
+		if (p === 'Overripe') {
+			return 'red';
+		} else {
+			return 'blue';
+		}
+	};
+	return (
+		<Pressable
+			style={styles.ingButton}
+			onPress={() => {
+				// clickEventListener(item);
+				checkIngredient(data.id);
+				onPress(data);
+			}}
+		>
+			<View style={styles.listItem}>
+				<View style={styles.titleRow}>
+					<Text style={styles.itemName}>{data.name}</Text>
+					{data.frozen ? (
+						<Ionicons
+							style={styles.frozenIcon}
+							name='ios-snow'
+							size={24}
+							color='black'
+						/>
+					) : (
+						<></>
+					)}
+					{data.open ? (
+						<FontAwesome5
+							style={styles.openIcon}
+							name='box-open'
+							size={24}
+							color='black'
+						/>
+					) : (
+						<></>
+					)}
+					<Pressable onPress={() => deleteIngrediet(data.id)}>
+						<Ionicons
+							style={styles.trashIcon}
+							name='ios-trash-bin-sharp'
+							size={22}
+							color='black'
+						/>
+					</Pressable>
+				</View>
+				<View style={styles.addedDateRow}>
+					<Text style={styles.addedOnDate}>
+						<Text>
+							Added{' '}
+							{formatDistanceToNow(new Date(data.addedOn), {
+								addSuffix: true,
+							})}
+						</Text>
+					</Text>
+				</View>
+				{data.ripeness != 'Not selected' ? (
+					<View>
+						<View style={styles.infoRow}>
+							<View style={styles.categoryColumn}>
+								<Text>Ripeness:</Text>
+								<View style={{ width: '90%' }}>
+									<ProgressBar
+										progress={progress(data.ripeness)}
+										color={progressc(data.ripeness)}
+									/>
+								</View>
+								<Text style={styles.category}>{data.ripeness}</Text>
+							</View>
+						</View>
+					</View>
+				) : (
+					<></>
+				)}
+
+				<View style={styles.infoRow}>
+					<View style={styles.categoryColumn}>
+						<Text>Category:</Text>
+						<Text style={styles.category}>{data.category}</Text>
+					</View>
+					<View style={styles.locationColumn}>
+						<Text>Location: </Text>
+						<Text style={styles.location}>{data.location}</Text>
+					</View>
+					<View style={styles.confectionTypeColumn}>
+						<Text>Confection Type: </Text>
+						<Text style={styles.confectionType}>{data.confectionType}</Text>
+					</View>
+				</View>
+				{data.ripeness != 'Not selected' ? (
+					<View style={styles.lastCheckedRow}>
+						<Text style={styles.editedDate}>
+							Last checked{' '}
+							{formatDistanceToNow(new Date(data.editedOn), {
+								addSuffix: true,
+							})}
+						</Text>
+					</View>
+				) : (
+					<></>
+				)}
+				<View style={styles.expirationDateRow}>
+					<Text style={styles.expirationDate}>
+						{data.expirationDate != 'Not selected' && (
+							<Text>
+								Expires{' '}
+								{formatDistanceToNow(new Date(data.expirationDate), {
+									addSuffix: true,
+								})}
+							</Text>
+						)}
+						{data.expirationDate === 'Not selected' && (
+							<Text>No expiration date selected</Text>
+						)}
+					</Text>
+				</View>
+			</View>
+		</Pressable>
+	);
+};
+
+const styles = StyleSheet.create({
+	centeredView: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		width: '100%',
+		height: '100%',
+	},
+	listItem: {
+		flex: 1,
+	},
+	titleRow: {
+		flex: 1,
+		flexDirection: 'row',
+		margin: 5,
+		marginBottom: 0,
+	},
+	itemName: {
+		flex: 1,
+		fontSize: 18,
+		fontWeight: 'bold',
+	},
+	frozenIcon: {
+		marginRight: 5,
+	},
+	openIcon: {
+		marginRight: 5,
+	},
+	trashIcon: {
+		flex: 1,
+		marginRight: 5,
+	},
+	addedDateRow: {
+		flex: 1,
+		margin: 5,
+	},
+	addedOnDate: {
+		fontStyle: 'italic',
+		fontSize: 10,
+	},
+	infoRow: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	categoryColumn: {
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'flex-start',
+		justifyContent: 'center',
+		margin: 5,
+	},
+	category: {
+		flex: 1,
+		alignItems: 'center',
+	},
+	locationColumn: {
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'flex-start',
+		justifyContent: 'center',
+		margin: 5,
+	},
+	location: {
+		flex: 1,
+		alignItems: 'center',
+	},
+	confectionTypeColumn: {
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'flex-start',
+		justifyContent: 'center',
+		margin: 5,
+	},
+	confectionType: {
+		flex: 1,
+		alignItems: 'center',
+	},
+	lastCheckedRow: {
+		flex: 1,
+		margin: 5,
+	},
+	editedDate: {
+		fontStyle: 'italic',
+		fontSize: 10,
+	},
+	expirationDateRow: {
+		flex: 1,
+		margin: 5,
+	},
+	expirationDate: {
+		fontStyle: 'italic',
+		fontSize: 10,
+	},
+	container: {
+		flex: 1,
+		backgroundColor: 'blue',
+		alignItems: 'center',
+	},
+	list: {
+		flex: 1,
+		width: '100%',
+		height: '100%',
+		paddingLeft: 10,
+		paddingRight: 10,
+		backgroundColor: 'white',
+	},
+	loadingStyle: {
+		padding: 10,
+		color: 'lightgrey',
+		alignSelf: 'center',
+		fontStyle: 'italic',
+	},
+	searchContainer: {
+		backgroundColor: 'white',
+		borderWidth: 0,
+	},
+	ingButton: {
+		marginTop: 10,
+		padding: 5,
+		borderColor: 'blue',
+		borderRadius: 10,
+		backgroundColor: '#CDEFFF',
+	},
+});
+
+export default Listitem;

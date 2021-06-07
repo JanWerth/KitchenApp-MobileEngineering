@@ -40,3 +40,24 @@ export type ProductType = {
 	open: boolean;
 	addedOn: string;
 };
+
+export type filterModalProps = {
+	isVisible: boolean;
+	setFilterModalVisibility: () => void;
+	activeTab: string;
+	selectedIndex: number;
+	updateIndex: (index: number) => void;
+	filterFunction: (text: string) => void;
+};
+
+export type itemModalProps = {
+	isVisible: boolean;
+	setItemModalVisibility: () => void;
+	itemID?: string;
+	data: ProductType;
+};
+
+export type listitemProps = {
+	data: ProductType;
+	onPress: (item: ProductType) => void;
+};

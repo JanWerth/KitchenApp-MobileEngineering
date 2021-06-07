@@ -95,7 +95,6 @@ export default function AddIngredientScreen() {
 
 	//DateTimePicker
 	const [date, setDate] = useState(new Date());
-	const [mode, setMode] = useState('date');
 	const [show, setShow] = useState(false);
 
 	const onChange = (event: any, selectedDate: any) => {
@@ -106,7 +105,6 @@ export default function AddIngredientScreen() {
 
 	const showMode = () => {
 		setShow(true);
-		setMode('date');
 	};
 
 	const showDatepicker = () => {
@@ -138,7 +136,6 @@ export default function AddIngredientScreen() {
 				location: selectedLocation,
 				confectionType: selectedConfectionType,
 				expirationDate: expiry,
-
 				ripeness: selectedRipeness,
 				editedOn: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
 				frozen: isFrozen,
