@@ -9,7 +9,6 @@ import {
 	Keyboard,
 	TouchableWithoutFeedback,
 	Platform,
-	SafeAreaView,
 	StatusBar,
 } from 'react-native';
 import { categoryItems, categoryPlaceholder } from '../utils/categoryPicker';
@@ -19,7 +18,7 @@ import {
 	confectionPlaceholder,
 } from '../utils/confectionPicker';
 import { ripenessItems, ripenessPlaceholder } from '../utils/ripenessPicker';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { firebase } from '../api/fbconfig';
@@ -28,10 +27,13 @@ import FlashMessage, {
 	hideMessage,
 } from 'react-native-flash-message';
 import { format, add } from 'date-fns';
-import { Switch } from 'react-native-elements';
+import { Switch, Input, Button } from 'react-native-elements';
 
 export default function AddIngredientScreen() {
 	const [name, setName] = useState<string>('');
+	const [brand, setBrand] = useState<string>('');
+	const [additionalInformation, setAdditionalInformation] =
+		useState<boolean>(false);
 	const [selectedCategory, setSelectedCategory] =
 		useState<string>('Not selected');
 
@@ -78,7 +80,7 @@ export default function AddIngredientScreen() {
 				description:
 					'Please select an Expiration Date. \nAn open product can not be closed once it is saved.',
 				type: 'info',
-				duration: 2500,
+				duration: 3500,
 				icon: 'info',
 			});
 		} else {
@@ -114,6 +116,13 @@ export default function AddIngredientScreen() {
 	//Dismiss Keyboard when click outside of TextInput
 	const dismissKeyboard = () => {
 		Keyboard.dismiss();
+	};
+
+	const isEmpty = (input: string): boolean => {
+		if (input.trim() === '') {
+			return true;
+		}
+		return false;
 	};
 
 	//Save Input Data to Firebase
@@ -153,8 +162,8 @@ export default function AddIngredientScreen() {
 		}
 	};
 
-	const saveIngredient = async () => {
-		await saveData();
+	const saveIngredient = () => {
+		saveData();
 		setName('');
 		setSelectedCategory('Not selected');
 		setSelectedLocation('Not selected');
@@ -172,110 +181,58 @@ export default function AddIngredientScreen() {
 					<ScrollView style={{ width: '100%' }}>
 						<View style={{ width: '80%', alignSelf: 'center' }}>
 							<Text style={styles.Label}>Enter Item Name:</Text>
-							<TextInput
+							<Input
 								placeholder='Name'
-								style={styles.NameInput}
-								onChangeText={(text) => setName(text)}
+								errorMessage={isEmpty(name) ? `* Name is required` : ''}
+								onChangeText={(text) => {
+									setName(text);
+								}}
 								value={name}
-								placeholderTextColor={'lightgrey'}
-							/>
-							<Text style={styles.Label}>Select Category:</Text>
-							<View>
-								<RNPickerSelect
-									placeholder={categoryPlaceholder}
-									onValueChange={(value) => setSelectedCategory(value)}
-									items={categoryItems}
-									useNativeAndroidPickerStyle={false}
-									value={selectedCategory}
-									style={{
-										...pickerSelectStyles,
-										iconContainer: { top: 15, right: 12 },
-									}}
-									Icon={() => {
-										return (
-											<Ionicons name='md-arrow-down' size={24} color='gray' />
-										);
-									}}
-								/>
-							</View>
-							<Text style={styles.Label}>Select Location:</Text>
-							<View>
-								<RNPickerSelect
-									placeholder={locationPlaceholder}
-									onValueChange={(value) => setSelectedLocation(value)}
-									items={locationItems}
-									useNativeAndroidPickerStyle={false}
-									value={selectedLocation}
-									style={{
-										...pickerSelectStyles,
-										iconContainer: { top: 15, right: 12 },
-									}}
-									Icon={() => {
-										return (
-											<Ionicons name='md-arrow-down' size={24} color='gray' />
-										);
-									}}
-								/>
-							</View>
-							<Text style={styles.Label}>Select Confection:</Text>
-							<View>
-								<RNPickerSelect
-									placeholder={confectionPlaceholder}
-									onValueChange={(value) => setSelectedConfectionType(value)}
-									items={confectionItems}
-									useNativeAndroidPickerStyle={false}
-									value={selectedConfectionType}
-									style={{
-										...pickerSelectStyles,
-										iconContainer: { top: 15, right: 12 },
-									}}
-									Icon={() => {
-										return (
-											<Ionicons name='md-arrow-down' size={24} color='gray' />
-										);
-									}}
-								/>
-							</View>
-							<Pressable style={styles.dateButton} onPress={showDatepicker}>
-								<Text style={styles.dateText}>Select Expiration Date!</Text>
-							</Pressable>
-							{show && (
-								<DateTimePicker
-									testID='dateTimePicker'
-									value={date}
-									mode='date'
-									display='default'
-									onChange={onChange}
-									minimumDate={minimumDate}
-									maximumDate={maximumDate}
-								/>
-							)}
-							{!isFrozen ? (
-								<View>
-									<Text style={styles.Label}>Open</Text>
-									<View style={styles.switchView}>
-										<Switch
-											value={isOpen}
-											onValueChange={toggleIsOpenSwitch}
-											color='blue'
+								inputStyle={styles.NameInput}
+								rightIcon={
+									isEmpty(name) ? (
+										<MaterialCommunityIcons
+											name='asterisk'
+											size={12}
+											color='red'
 										/>
-									</View>
-								</View>
+									) : (
+										<></>
+									)
+								}
+							/>
+							<Button
+								title={
+									!additionalInformation
+										? 'Add more information'
+										: 'Hide more information'
+								}
+								type='outline'
+								onPress={() => setAdditionalInformation(!additionalInformation)}
+							/>
+							{!additionalInformation ? (
+								<></>
 							) : (
-								<View></View>
-							)}
-							{selectedConfectionType === 'Fresh' ? (
 								<View>
-									<Text style={styles.Label}>Ripeness</Text>
+									<Text style={styles.Label}>Brand:</Text>
+									<Input
+										placeholder='Name'
+										onChangeText={(text) => {
+											setBrand(text);
+										}}
+										value={brand}
+										inputStyle={styles.NameInput}
+										errorStyle={{ height: 0 }}
+									/>
+
+									<Text style={styles.Label}>Select Category:</Text>
 									<View>
 										<RNPickerSelect
-											placeholder={ripenessPlaceholder}
-											onValueChange={(value) => {
-												setSelectedRipeness(value), setEdited(today);
-											}}
-											items={ripenessItems}
+											placeholder={categoryPlaceholder}
+											onValueChange={(value) => setSelectedCategory(value)}
+											items={categoryItems}
 											useNativeAndroidPickerStyle={false}
-											value={selectedRipeness}
+											value={selectedCategory}
 											style={{
 												...pickerSelectStyles,
 												iconContainer: { top: 15, right: 12 },
@@ -291,37 +248,148 @@ export default function AddIngredientScreen() {
 											}}
 										/>
 									</View>
-								</View>
-							) : (
-								<></>
-							)}
-							{selectedConfectionType === 'Fresh' && !isOpen ? (
-								<View>
-									<Text style={styles.Label}>Is the product frozen?</Text>
-									<View style={styles.switchView}>
-										<Switch
-											value={isFrozen}
-											onValueChange={toggleIsFrozenSwitch}
-											color='blue'
+									<Text style={styles.Label}>Select Location:</Text>
+									<View>
+										<RNPickerSelect
+											placeholder={locationPlaceholder}
+											onValueChange={(value) => setSelectedLocation(value)}
+											items={locationItems}
+											useNativeAndroidPickerStyle={false}
+											value={selectedLocation}
+											style={{
+												...pickerSelectStyles,
+												iconContainer: { top: 15, right: 12 },
+											}}
+											Icon={() => {
+												return (
+													<Ionicons
+														name='md-arrow-down'
+														size={24}
+														color='gray'
+													/>
+												);
+											}}
 										/>
 									</View>
+									<Text style={styles.Label}>Select Confection:</Text>
+									<View>
+										<RNPickerSelect
+											placeholder={confectionPlaceholder}
+											onValueChange={(value) =>
+												setSelectedConfectionType(value)
+											}
+											items={confectionItems}
+											useNativeAndroidPickerStyle={false}
+											value={selectedConfectionType}
+											style={{
+												...pickerSelectStyles,
+												iconContainer: { top: 15, right: 12 },
+											}}
+											Icon={() => {
+												return (
+													<Ionicons
+														name='md-arrow-down'
+														size={24}
+														color='gray'
+													/>
+												);
+											}}
+										/>
+									</View>
+									<Pressable style={styles.dateButton} onPress={showDatepicker}>
+										<Text style={styles.dateText}>Select Expiration Date!</Text>
+									</Pressable>
+									{show && (
+										<DateTimePicker
+											testID='dateTimePicker'
+											value={date}
+											mode='date'
+											display='default'
+											onChange={onChange}
+											minimumDate={minimumDate}
+											maximumDate={maximumDate}
+										/>
+									)}
+									{!isFrozen ? (
+										<View>
+											<Text style={styles.Label}>Open</Text>
+											<View style={styles.switchView}>
+												<Switch
+													value={isOpen}
+													onValueChange={toggleIsOpenSwitch}
+													color='blue'
+												/>
+											</View>
+										</View>
+									) : (
+										<View></View>
+									)}
+									{selectedConfectionType === 'Fresh' ? (
+										<View>
+											<Text style={styles.Label}>Ripeness</Text>
+											<View>
+												<RNPickerSelect
+													placeholder={ripenessPlaceholder}
+													onValueChange={(value) => {
+														setSelectedRipeness(value), setEdited(today);
+													}}
+													items={ripenessItems}
+													useNativeAndroidPickerStyle={false}
+													value={selectedRipeness}
+													style={{
+														...pickerSelectStyles,
+														iconContainer: { top: 15, right: 12 },
+													}}
+													Icon={() => {
+														return (
+															<Ionicons
+																name='md-arrow-down'
+																size={24}
+																color='gray'
+															/>
+														);
+													}}
+												/>
+											</View>
+										</View>
+									) : (
+										<></>
+									)}
+									{selectedConfectionType === 'Fresh' && !isOpen ? (
+										<View>
+											<Text style={styles.Label}>Is the product frozen?</Text>
+											<View style={styles.switchView}>
+												<Switch
+													value={isFrozen}
+													onValueChange={toggleIsFrozenSwitch}
+													color='blue'
+												/>
+											</View>
+										</View>
+									) : (
+										<></>
+									)}
 								</View>
-							) : (
-								<></>
 							)}
 						</View>
 					</ScrollView>
 				</View>
 				<View style={styles.buttonRow}>
-					<Pressable style={styles.barcodeButton}>
-						<Ionicons name='ios-barcode-outline' size={42} color='white' />
-					</Pressable>
-					<Pressable
-						style={styles.addIngredientButton}
+					<Button
+						containerStyle={styles.barcodeButton}
+						type={'clear'}
+						icon={
+							<Ionicons name='ios-barcode-outline' size={42} color='black' />
+						}
+					/>
+
+					<Button
+						containerStyle={styles.addIngredientButton}
+						type={'solid'}
+						titleStyle={styles.addIngredientText}
+						title='Add Ingredient'
 						onPress={saveIngredient}
-					>
-						<Text style={styles.addIngredientText}>Add Ingredient</Text>
-					</Pressable>
+					/>
 				</View>
 				<FlashMessage position='bottom' floating={true} />
 			</View>
@@ -358,7 +426,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: 'white',
-		// paddingTop: Constants.statusBarHeight
 	},
 	body: {
 		flex: 9,
@@ -375,34 +442,21 @@ const styles = StyleSheet.create({
 	NameInput: {
 		fontSize: 20,
 		fontWeight: 'bold',
-		borderBottomWidth: 1,
 		height: 45,
-		borderRadius: 10,
-		padding: 10,
 	},
 	buttonRow: {
 		flex: 1.25,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		// backgroundColor: "green",
 	},
 	barcodeButton: {
 		width: '17.5%',
-		height: 50,
-		backgroundColor: '#353fcc',
 		borderRadius: 75,
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
 	addIngredientButton: {
 		width: '65%',
-		height: 50,
-		backgroundColor: '#353fcc',
 		borderRadius: 75,
-		marginLeft: '4.5%',
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
 	addIngredientText: {
 		fontSize: 22,

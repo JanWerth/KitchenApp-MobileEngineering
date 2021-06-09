@@ -10,11 +10,13 @@ import {
 } from 'react-native';
 import { ProductType } from '../types';
 import { firebase } from '../api/fbconfig';
-import { add, format, isBefore } from 'date-fns';
+import { add, sub, format, isBefore, isAfter } from 'date-fns';
 import { ButtonGroup } from 'react-native-elements';
 import { expirationButtons } from '../utils/expirationButtons';
 import ItemModal from '../components/itemModal/itemModal';
 import Listitem from '../components/listitem/listitem';
+
+//Buggy
 
 export default function ExpiringSoonScreen() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -28,41 +30,48 @@ export default function ExpiringSoonScreen() {
 	const [loading, setLoading] = useState<boolean>(true);
 
 	const today = new Date();
-	const oneDay = format(add(today, { days: 1 }), "yyyy-MM-dd'T'HH:mm");
-	const threeDays = format(add(today, { days: 3 }), "yyyy-MM-dd'T'HH:mm");
-	const oneWeek = format(add(today, { weeks: 1 }), "yyyy-MM-dd'T'HH:mm");
+	const expiringSoon = format(add(today, { days: 3 }), "yyyy-MM-dd'T'HH:mm");
+	const toBeChecked = format(sub(today, { days: 3 }), "yyyy-MM-dd'T'HH:mm");
 
-	const buttons = ['1 day', '3 days', '7 days'];
-	const [activeTab, setActiveTab] = useState<string>('1 day');
+	const [activeTab, setActiveTab] = useState<string>(expirationButtons[0]);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	const updateIndex = (index: number) => {
 		setSelectedIndex(index);
 		setActiveTab(expirationButtons[index]);
 		expirationDateFilterFunction(expirationButtons[index]);
+		// console.log(selectedIndex + ' ' + index);
 	};
 
 	const expirationDateFilterFunction = (range: string) => {
 		if (filteredProductsList) {
-			if (range === buttons[0]) {
+			if (range === expirationButtons[0]) {
 				const newData: ProductType[] = masterProductsList.filter((item) => {
-					if (isBefore(new Date(item.expirationDate), new Date(oneDay))) {
+					if (isBefore(new Date(item.expirationDate), new Date(expiringSoon))) {
 						return item.expirationDate;
 					}
 				});
 				setFilteredProductsList(newData);
 			}
-			if (range === buttons[1]) {
+			if (range === expirationButtons[1]) {
 				const newData: ProductType[] = masterProductsList.filter((item) => {
-					if (isBefore(new Date(item.expirationDate), new Date(threeDays))) {
+					if (item.open === true) {
+						return item.name;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+			if (range === expirationButtons[2]) {
+				const newData: ProductType[] = masterProductsList.filter((item) => {
+					if (item.ripeness === 'Ripe') {
 						return item.expirationDate;
 					}
 				});
 				setFilteredProductsList(newData);
 			}
-			if (range === buttons[2]) {
+			if (range === expirationButtons[3]) {
 				const newData: ProductType[] = masterProductsList.filter((item) => {
-					if (isBefore(new Date(item.expirationDate), new Date(oneWeek))) {
+					if (isAfter(new Date(toBeChecked), new Date(toBeChecked))) {
 						return item.expirationDate;
 					}
 				});
@@ -71,13 +80,41 @@ export default function ExpiringSoonScreen() {
 		}
 	};
 
-	const setInitialData = (list: ProductType[]) => {
-		const newData: ProductType[] = list.filter((item) => {
-			if (isBefore(new Date(item.expirationDate), new Date(oneDay))) {
-				return item.expirationDate;
+	const setInitialData = (list: ProductType[], range: string) => {
+		if (list) {
+			if (range === expirationButtons[0]) {
+				const newData: ProductType[] = list.filter((item) => {
+					if (isBefore(new Date(item.expirationDate), new Date(expiringSoon))) {
+						return item.expirationDate;
+					}
+				});
+				setFilteredProductsList(newData);
 			}
-		});
-		setFilteredProductsList(newData);
+			if (range === expirationButtons[1]) {
+				const newData: ProductType[] = list.filter((item) => {
+					if (item.open === true) {
+						return item.name;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+			if (range === expirationButtons[2]) {
+				const newData: ProductType[] = list.filter((item) => {
+					if (item.ripeness === 'Ripe') {
+						return item.expirationDate;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+			if (range === expirationButtons[3]) {
+				const newData: ProductType[] = list.filter((item) => {
+					if (isAfter(new Date(toBeChecked), new Date(toBeChecked))) {
+						return item.expirationDate;
+					}
+				});
+				setFilteredProductsList(newData);
+			}
+		}
 	};
 
 	useEffect(() => {
@@ -89,7 +126,7 @@ export default function ExpiringSoonScreen() {
 				productsList.push({ id, ...products[id] });
 			}
 			setMasterProductsList(productsList);
-			setInitialData(productsList);
+			setInitialData(productsList, activeTab);
 			setLoading(false);
 		});
 	}, []);
@@ -104,10 +141,10 @@ export default function ExpiringSoonScreen() {
 				ListHeaderComponent={
 					<View style={styles.filterRow}>
 						<ButtonGroup
-							buttons={buttons}
+							buttons={expirationButtons}
 							selectedIndex={selectedIndex}
 							onPress={updateIndex}
-							containerStyle={{ width: '90%' }}
+							containerStyle={{ width: '100%' }}
 						/>
 					</View>
 				}

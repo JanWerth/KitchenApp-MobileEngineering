@@ -21,9 +21,8 @@ import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { firebase } from '../../api/fbconfig';
 import { format, add, min } from 'date-fns';
-import { hideMessage, showMessage } from 'react-native-flash-message';
 import { ripenessItems, ripenessPlaceholder } from '../../utils/ripenessPicker';
-import { Switch } from 'react-native-paper';
+import { Button } from 'react-native-elements';
 
 const ItemModal = ({
 	isVisible,
@@ -112,6 +111,17 @@ const ItemModal = ({
 			setDate(today);
 		} else {
 			setMaximumDate(in5years);
+		}
+	};
+
+	const toggleIsFrozenSwitch = () => {
+		setIsFrozen(!isFrozen);
+		if (!isFrozen) {
+			setMinimumDate(in6months);
+			setDate(in6months);
+		} else {
+			setMinimumDate(today);
+			setDate(today);
 		}
 	};
 
@@ -226,13 +236,21 @@ const ItemModal = ({
 								maximumDate={maximumDate}
 							/>
 						)}
-						{!isOpen ? (
-							<Pressable onPress={toggleIsOpen}>
-								<FontAwesome5 name='box' size={24} color='black' />
-							</Pressable>
-						) : (
-							<FontAwesome5 name='box-open' size={24} color='black' />
-						)}
+						<View style={styles.openRow}>
+							<Text style={styles.openLabel}>Open?</Text>
+							{!isOpen ? (
+								<Pressable style={styles.boxIcon} onPress={toggleIsOpen}>
+									<FontAwesome5 name='box' size={32} color='black' />
+								</Pressable>
+							) : (
+								<FontAwesome5
+									style={styles.boxIcon}
+									name='box-open'
+									size={32}
+									color='black'
+								/>
+							)}
+						</View>
 						{selectedConfectionType === 'Fresh' ? (
 							<View>
 								<Text style={styles.Label}>Ripeness</Text>
@@ -240,7 +258,8 @@ const ItemModal = ({
 									<RNPickerSelect
 										placeholder={ripenessPlaceholder}
 										onValueChange={(value) => {
-											setSelectedRipeness(value), setEdited(today);
+											setSelectedRipeness(value);
+											// setEdited(today);
 										}}
 										items={ripenessItems}
 										useNativeAndroidPickerStyle={false}
@@ -260,34 +279,45 @@ const ItemModal = ({
 						) : (
 							<></>
 						)}
-						{/* {selectedConfectionType === 'Fresh' && !isOpen ? (
+						{selectedConfectionType === 'Fresh' && !isOpen ? (
 							<View>
 								<Text style={styles.Label}>Is the product frozen?</Text>
-								<View style={styles.switchView}>
-									<Switch
-										value={isFrozen}
-										onValueChange={toggleIsFrozenSwitch}
-										color='blue'
-									/>
-								</View>
+								{!isFrozen ? (
+									<View style={{ paddingBottom: 10 }}>
+										<Button
+											type={'outline'}
+											title={'Freeze'}
+											onPress={toggleIsFrozenSwitch}
+										/>
+									</View>
+								) : (
+									<View style={{ paddingBottom: 10 }}>
+										<Button
+											type={'outline'}
+											title={'Unfreeze'}
+											onPress={toggleIsFrozenSwitch}
+										/>
+									</View>
+								)}
 							</View>
 						) : (
 							<></>
-						)} */}
+						)}
 					</ScrollView>
 					<View style={styles.modalFooter}>
 						<View style={styles.divider}></View>
 						<View style={styles.modalButtonRow}>
-							<Pressable
+							<Button
+								title={'Close'}
 								style={[styles.button, styles.buttonClose]}
 								onPress={() => {
 									setItemModalVisibility();
 									setMaximumDate(in5years);
 								}}
-							>
-								<Text style={styles.textStyle}>Close</Text>
-							</Pressable>
-							<Pressable
+							></Button>
+							<Button
+								containerStyle={styles.buttonSave}
+								title={'Save'}
 								style={[styles.button, styles.buttonSave]}
 								onPress={() => {
 									updateIngredient();
@@ -295,8 +325,8 @@ const ItemModal = ({
 									setMaximumDate(in5years);
 								}}
 							>
-								<Text style={styles.textStyle}>Save</Text>
-							</Pressable>
+								{' '}
+							</Button>
 						</View>
 					</View>
 				</View>
@@ -366,6 +396,7 @@ const styles = StyleSheet.create({
 		backgroundColor: 'blue',
 		margin: 15,
 	},
+	boxIcon: {},
 	dateText: {
 		fontSize: 16,
 		lineHeight: 21,
@@ -449,6 +480,7 @@ const styles = StyleSheet.create({
 		padding: 10,
 		alignItems: 'center',
 		justifyContent: 'space-evenly',
+		marginTop: 5,
 	},
 	buttonClose: {
 		width: '17.5%',
@@ -460,12 +492,19 @@ const styles = StyleSheet.create({
 	},
 	buttonSave: {
 		width: '65%',
-		height: 50,
-		backgroundColor: '#353fcc',
-		borderRadius: 75,
-		marginLeft: '4.5%',
+	},
+	openRow: {
+		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'center',
+	},
+	openLabel: {
+		flex: 0.5,
+		fontSize: 20,
+		fontWeight: 'bold',
+		marginBottom: 1,
+	},
+	switchView: {
+		alignItems: 'flex-start',
 	},
 });
 
