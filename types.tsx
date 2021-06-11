@@ -61,3 +61,18 @@ export type listitemProps = {
 	data: ProductType;
 	onPress: (item: ProductType) => void;
 };
+
+export type addIngredientProps = {
+	name: string;
+	brand: string;
+	category: string;
+	location: string;
+	confectionType: string;
+	expirationDate: Date;
+	ripeness: string;
+	editedOn?: number | Date | undefined;
+	frozen: boolean;
+	open: boolean;
+	addedOn?: string;
+	clear: () => void;
+};
