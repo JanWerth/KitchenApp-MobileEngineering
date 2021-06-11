@@ -62,6 +62,10 @@ export type listitemProps = {
 	onPress: (item: ProductType) => void;
 };
 
+export type formProps = {
+	setScanner: () => void;
+};
+
 export type addIngredientProps = {
 	name: string;
 	brand: string;
@@ -75,4 +79,5 @@ export type addIngredientProps = {
 	open: boolean;
 	addedOn?: string;
 	clear: () => void;
+	setScanner?: () => void;
 };

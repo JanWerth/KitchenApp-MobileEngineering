@@ -25,8 +25,9 @@ import FlashMessage, {
 import { add } from 'date-fns';
 import { Switch, Input, Button } from 'react-native-elements';
 import AddIngredientButtons from './addIngredientButtons';
+import { formProps } from '../../types';
 
-const AddIngredientForm = () => {
+const AddIngredientForm = ({ setScanner }: formProps) => {
 	const [name, setName] = useState<string>('');
 	const [brand, setBrand] = useState<string>('');
 	const [additionalInformation, setAdditionalInformation] =
@@ -325,6 +326,7 @@ const AddIngredientForm = () => {
 				frozen={isFrozen}
 				open={isOpen}
 				clear={clear}
+				setScanner={setScanner}
 			/>
 
 			<FlashMessage position='bottom' floating={true} />
@@ -364,9 +366,11 @@ const styles = StyleSheet.create({
 	},
 	body: {
 		flex: 9,
-		backgroundColor: 'white',
+		// backgroundColor: 'blue',
 		alignItems: 'center',
 		paddingTop: 10,
+		paddingBottom: 10,
+		marginBottom: 60,
 	},
 	Label: {
 		fontSize: 20,

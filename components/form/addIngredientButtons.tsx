@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { addIngredientProps } from '../../types';
 import { StyleSheet, View, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +18,7 @@ const AddIngredientButtons = ({
 	frozen,
 	open,
 	clear,
+	setScanner,
 }: addIngredientProps) => {
 	const today = new Date();
 
@@ -63,6 +64,7 @@ const AddIngredientButtons = ({
 				containerStyle={styles.barcodeButton}
 				type={'clear'}
 				icon={<Ionicons name='ios-barcode-outline' size={42} color='black' />}
+				onPress={setScanner}
 			/>
 			<Button
 				containerStyle={styles.addIngredientButton}
@@ -84,6 +86,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
+		bottom: 0,
+		position: 'absolute',
+		width: '100%',
+		// backgroundColor: 'white',
 	},
 	barcodeButton: {
 		width: '17.5%',
