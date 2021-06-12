@@ -56,16 +56,30 @@ export default function AddIngredientScreen() {
 			);
 			const json = await toJson(response);
 			setScanner(false);
-			threeButtonAlert(json.product.product_name);
+			let scannedName = '';
+			{
+				json.product.product_name_it
+					? (scannedName = json.product.product_name_it)
+					: (scannedName = json.product.product_name_);
+			}
+			let scannedBrand = '';
+			{
+				json.product.brands && (scannedBrand = json.product.brands);
+			}
+			{
+				scannedBrand != ''
+					? threeButtonAlert(scannedName, scannedBrand)
+					: threeButtonAlert(scannedName);
+			}
 		} catch (err) {
 			console.log('error', err);
+			alert('Barcode code not be scanned');
 			setScanner(false);
 		}
-		// alert(`Bar code with  data ${data} has been scanned!`);
 	};
 
-	const threeButtonAlert = (name: string) => {
-		Alert.alert('Item Scanned', `Scanned Item ${name}`, [
+	const threeButtonAlert = (name: string, brand?: string) => {
+		Alert.alert('Item Scanned', `Scanned Item ${name} from ${brand}`, [
 			{
 				text: `Cancel`,
 				onPress: () => console.log('Cancel without saving'),
@@ -78,13 +92,8 @@ export default function AddIngredientScreen() {
 			{
 				text: 'Save',
 				onPress: () => {
-					saveScan(name),
-						showMessage({
-							message: 'Success',
-							description: 'Ingredient Saved',
-							type: 'success',
-							icon: 'success',
-						});
+					saveScan(name, brand);
+					console.log('saved');
 				},
 			},
 		]);

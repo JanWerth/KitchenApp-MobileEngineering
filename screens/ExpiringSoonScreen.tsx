@@ -189,14 +189,12 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		marginTop: 5,
 	},
-
 	list: {
 		flex: 1,
 		width: '100%',
 		height: '100%',
 		paddingLeft: 10,
 		paddingRight: 10,
-		// borderWidth: 1,
 		backgroundColor: 'white',
 	},
 	loadingStyle: {
