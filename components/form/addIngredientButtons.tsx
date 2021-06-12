@@ -26,7 +26,6 @@ const AddIngredientButtons = ({
 		if (name === null || name === '' || name.trim() === '') {
 			alert('Name is required');
 		} else {
-			alert('Ok');
 			let expiry;
 			if (expirationDate.toDateString() === today.toDateString()) {
 				expiry = 'Not selected';
@@ -43,7 +42,7 @@ const AddIngredientButtons = ({
 				confectionType,
 				expiry,
 				ripeness,
-				format(new Date(), "yyy-MM-dd'T'HH:mm"),
+				now,
 				frozen,
 				open,
 				now

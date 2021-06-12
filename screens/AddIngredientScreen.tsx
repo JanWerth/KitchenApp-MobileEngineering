@@ -5,15 +5,23 @@ import {
 	Keyboard,
 	View,
 	StyleSheet,
+	Image,
+	Alert,
 } from 'react-native';
 import AddIngredientForm from '../components/form/addIngredientForm';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Button } from 'react-native-elements';
+import { Dimensions } from 'react-native';
+import saveScan from '../api/saveScan';
+import { showMessage } from 'react-native-flash-message';
+
+const { width } = Dimensions.get('window');
+const qrSize = width * 0.7;
 
 export default function AddIngredientScreen() {
 	const [hasPermission, setHasPermission] = useState<boolean>(false);
 	const [scanner, setScanner] = useState<boolean>(false);
 	const [scanned, setScanned] = useState(false);
+
 	//Dismiss Keyboard when click outside of TextInput
 	const dismissKeyboard = () => {
 		Keyboard.dismiss();
@@ -42,16 +50,13 @@ export default function AddIngredientScreen() {
 	};
 
 	const handleBarCodeScanned = async ({ data }: any) => {
-		setScanned(true);
 		try {
 			const response = await fetch(
 				`https://world.openfoodfacts.org/api/v0/product/${data}`
 			);
 			const json = await toJson(response);
-			console.log(json);
-			// console.log(json.product.product_name);
-			// console.log(response);
 			setScanner(false);
+			threeButtonAlert(json.product.product_name);
 		} catch (err) {
 			console.log('error', err);
 			setScanner(false);
@@ -59,33 +64,91 @@ export default function AddIngredientScreen() {
 		// alert(`Bar code with  data ${data} has been scanned!`);
 	};
 
+	const threeButtonAlert = (name: string) => {
+		Alert.alert('Item Scanned', `Scanned Item ${name}`, [
+			{
+				text: `Cancel`,
+				onPress: () => console.log('Cancel without saving'),
+				style: 'cancel',
+			},
+			{
+				text: 'Scan Again',
+				onPress: () => setScanner(true),
+			},
+			{
+				text: 'Save',
+				onPress: () => {
+					saveScan(name),
+						showMessage({
+							message: 'Success',
+							description: 'Ingredient Saved',
+							type: 'success',
+							icon: 'success',
+						});
+				},
+			},
+		]);
+	};
+
 	return (
 		<TouchableWithoutFeedback onPress={dismissKeyboard}>
-			<View style={{ width: '100%', height: '100%' }}>
+			{!scanner ? (
 				<AddIngredientForm setScanner={() => setScanner(true)} />
-				{scanner ? (
+			) : (
+				<View
+					style={{
+						flex: 1,
+						flexDirection: 'column',
+						justifyContent: 'flex-end',
+					}}
+				>
 					<BarCodeScanner
-						style={StyleSheet.absoluteFillObject}
-						onBarCodeScanned={handleBarCodeScanned}
+						style={[StyleSheet.absoluteFillObject, styles.container]}
+						onBarCodeScanned={(data) => {
+							handleBarCodeScanned(data);
+						}}
 					>
-						<Text>Scan Barcode</Text>
-						<Button
-							type={'solid'}
-							title='Close'
-							onPress={() => setScanner(false)}
-							// style={{ position: 'absolute', bottom: 0 }}
+						<Text style={styles.description}>Scan your barcode</Text>
+						<Image
+							style={styles.qr}
+							source={require('../assets/images/scan.png')}
 						/>
-						{scanned && (
-							<Button
-								title={'Tap to Scan Again'}
-								onPress={() => setScanned(false)}
-							/>
-						)}
+						<Text onPress={() => setScanner(false)} style={styles.cancel}>
+							Close
+						</Text>
 					</BarCodeScanner>
-				) : (
-					<></>
-				)}
-			</View>
+				</View>
+			)}
 		</TouchableWithoutFeedback>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#ecf0f1',
+		padding: 8,
+	},
+	qr: {
+		marginTop: '20%',
+		marginBottom: '20%',
+		width: qrSize,
+		height: qrSize,
+	},
+	description: {
+		fontSize: width * 0.09,
+		marginTop: '5%',
+		textAlign: 'center',
+		width: '90%',
+		color: 'white',
+	},
+	cancel: {
+		fontSize: width * 0.05,
+		textAlign: 'center',
+		width: '70%',
+		color: 'white',
+		fontWeight: '800',
+	},
+});
