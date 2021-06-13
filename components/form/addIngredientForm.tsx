@@ -143,7 +143,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 								setName(text);
 							}}
 							value={name}
-							inputStyle={styles.NameInput}
+							inputStyle={styles.input}
 							rightIcon={
 								isEmpty(name) ? (
 									<MaterialCommunityIcons
@@ -171,12 +171,12 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 							<View>
 								<Text style={styles.Label}>Brand:</Text>
 								<Input
-									placeholder='Name'
+									placeholder='Brand'
 									onChangeText={(text) => {
 										setBrand(text);
 									}}
 									value={brand}
-									inputStyle={styles.NameInput}
+									inputStyle={styles.input}
 									errorStyle={{ height: 0 }}
 								/>
 
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
 		marginBottom: 1,
 		paddingTop: 20,
 	},
-	NameInput: {
+	input: {
 		fontSize: 20,
 		fontWeight: 'bold',
 		height: 45,

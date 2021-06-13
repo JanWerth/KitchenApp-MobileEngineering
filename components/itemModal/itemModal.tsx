@@ -7,7 +7,6 @@ import {
 	StyleSheet,
 	Pressable,
 	ScrollView,
-	TextInput,
 	Platform,
 } from 'react-native';
 import { itemModalProps } from '../../types';
@@ -22,7 +21,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { firebase } from '../../api/fbconfig';
 import { format, add, min } from 'date-fns';
 import { ripenessItems, ripenessPlaceholder } from '../../utils/ripenessPicker';
-import { Button } from 'react-native-elements';
+import { Button, Input } from 'react-native-elements';
 
 const ItemModal = ({
 	isVisible,
@@ -30,6 +29,7 @@ const ItemModal = ({
 	data,
 }: itemModalProps) => {
 	const [name, setName] = useState<string>('');
+	const [brand, setBrand] = useState<string>('');
 	const [selectedCategory, setSelectedCategory] =
 		useState<string>('Not selected');
 	const [selectedLocation, setSelectedLocation] =
@@ -71,6 +71,7 @@ const ItemModal = ({
 
 	useEffect(() => {
 		setName(data?.name);
+		setBrand(data?.brand);
 		setSelectedCategory(data?.category);
 		setSelectedLocation(data?.location);
 		setSelectedConfectionType(data?.confectionType);
@@ -95,11 +96,13 @@ const ItemModal = ({
 		}
 		await firebase.database().ref(`Ingredients/${data.id}`).update({
 			name: name,
+			brand: brand,
 			category: selectedCategory,
 			location: selectedLocation,
 			confectionType: selectedConfectionType,
 			expirationDate: dateString,
 			open: isOpen,
+			frozen: isFrozen,
 		});
 	};
 
@@ -156,12 +159,25 @@ const ItemModal = ({
 					</View>
 					<View style={styles.divider}></View>
 					<ScrollView style={styles.scrollStyle}>
-						<Text style={styles.Label}>Enter Item Name:</Text>
-						<TextInput
+						<Text style={styles.Label}>Edit Name:</Text>
+						<Input
 							placeholder='Name'
-							style={styles.NameInput}
-							onChangeText={(text) => setName(text)}
+							onChangeText={(text) => {
+								setName(text);
+							}}
 							value={name}
+							inputStyle={styles.input}
+							errorStyle={{ height: 0 }}
+						/>
+						<Text style={styles.Label}>Edit Brand:</Text>
+						<Input
+							placeholder='Name'
+							onChangeText={(text) => {
+								setBrand(text);
+							}}
+							value={brand}
+							inputStyle={styles.input}
+							errorStyle={{ height: 0 }}
 						/>
 						<Text style={styles.Label}>Select Category:</Text>
 						<View>
@@ -236,22 +252,31 @@ const ItemModal = ({
 								maximumDate={maximumDate}
 							/>
 						)}
-						<View style={styles.openRow}>
-							<Text style={styles.openLabel}>Open?</Text>
-							{!isOpen ? (
-								<Pressable style={styles.boxIcon} onPress={toggleIsOpen}>
-									<FontAwesome5 name='box' size={32} color='black' />
-								</Pressable>
-							) : (
-								<FontAwesome5
-									style={styles.boxIcon}
-									name='box-open'
-									size={32}
-									color='black'
-								/>
-							)}
-						</View>
-						{selectedConfectionType === 'Fresh' ? (
+						{!isFrozen && (
+							<View>
+								<View style={styles.openRow}>
+									<Text style={styles.openLabel}>Open?</Text>
+									{!isOpen ? (
+										<Pressable style={styles.boxIcon} onPress={toggleIsOpen}>
+											<FontAwesome5 name='box' size={32} color='black' />
+										</Pressable>
+									) : (
+										<FontAwesome5
+											style={styles.boxIcon}
+											name='box-open'
+											size={32}
+											color='black'
+										/>
+									)}
+								</View>
+								{isOpen && (
+									<Text style={styles.infoText}>
+										Info: The product is open and can not be closed.
+									</Text>
+								)}
+							</View>
+						)}
+						{selectedConfectionType === 'Fresh' && (
 							<View>
 								<Text style={styles.Label}>Ripeness</Text>
 								<View>
@@ -276,10 +301,8 @@ const ItemModal = ({
 									/>
 								</View>
 							</View>
-						) : (
-							<></>
 						)}
-						{selectedConfectionType === 'Fresh' && !isOpen ? (
+						{selectedConfectionType === 'Fresh' && !isOpen && (
 							<View>
 								<Text style={styles.Label}>Is the product frozen?</Text>
 								{!isFrozen ? (
@@ -300,8 +323,6 @@ const ItemModal = ({
 									</View>
 								)}
 							</View>
-						) : (
-							<></>
 						)}
 					</ScrollView>
 					<View style={styles.modalFooter}>
@@ -374,14 +395,10 @@ const styles = StyleSheet.create({
 		marginBottom: 1,
 		paddingTop: 20,
 	},
-	NameInput: {
+	input: {
 		fontSize: 20,
 		fontWeight: 'bold',
-		borderBottomWidth: 1,
-		width: 300,
 		height: 45,
-		borderRadius: 10,
-		padding: 10,
 	},
 	datepicker: {
 		marginTop: 100,
@@ -502,6 +519,12 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: 'bold',
 		marginBottom: 1,
+	},
+	infoText: {
+		fontSize: 12,
+		color: 'grey',
+		marginTop: 5,
+		alignSelf: 'center',
 	},
 	switchView: {
 		alignItems: 'flex-start',

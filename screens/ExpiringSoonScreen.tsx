@@ -20,13 +20,11 @@ import Listitem from '../components/listitem/listitem';
 
 export default function ExpiringSoonScreen() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
-	const [itemData, setItemData] = useState<ProductType>();
+	const [itemData, setItemData] = useState<ProductType | undefined>();
 	const [masterProductsList, setMasterProductsList] = useState<ProductType[]>(
 		[]
 	);
-	const [filteredProductsList, setFilteredProductsList] = useState<
-		ProductType[]
-	>([]);
+	const [filteredProductsList, setFilteredProductsList] = useState<any>();
 	const [loading, setLoading] = useState<boolean>(true);
 
 	const today = new Date();
@@ -39,11 +37,10 @@ export default function ExpiringSoonScreen() {
 	const updateIndex = (index: number) => {
 		setSelectedIndex(index);
 		setActiveTab(expirationButtons[index]);
-		expirationDateFilterFunction(expirationButtons[index]);
-		// console.log(selectedIndex + ' ' + index);
+		filterFunction(expirationButtons[index]);
 	};
 
-	const expirationDateFilterFunction = (range: string) => {
+	const filterFunction = (range: string) => {
 		if (filteredProductsList) {
 			if (range === expirationButtons[0]) {
 				const newData: ProductType[] = masterProductsList.filter((item) => {
@@ -71,7 +68,7 @@ export default function ExpiringSoonScreen() {
 			}
 			if (range === expirationButtons[3]) {
 				const newData: ProductType[] = masterProductsList.filter((item) => {
-					if (isAfter(new Date(toBeChecked), new Date(toBeChecked))) {
+					if (isAfter(new Date(today), new Date(item.editedOn))) {
 						return item.expirationDate;
 					}
 				});
@@ -108,7 +105,7 @@ export default function ExpiringSoonScreen() {
 			}
 			if (range === expirationButtons[3]) {
 				const newData: ProductType[] = list.filter((item) => {
-					if (isAfter(new Date(toBeChecked), new Date(toBeChecked))) {
+					if (isAfter(new Date(toBeChecked), new Date(item.editedOn))) {
 						return item.expirationDate;
 					}
 				});
@@ -132,7 +129,8 @@ export default function ExpiringSoonScreen() {
 	}, []);
 
 	const clickEventListener = (item: ProductType) => {
-		setItemData(item), setModalVisible(!modalVisible);
+		setItemData(item);
+		setModalVisible(!modalVisible);
 	};
 
 	return (

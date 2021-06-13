@@ -60,32 +60,28 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 				// style={styles.ingButton}
 				onPress={() => {
 					// clickEventListener(item);
-					// checkIngredient(data.id);
+					checkIngredient(data.id);
 					onPress(data);
 				}}
 			>
 				<View style={styles.listItem}>
 					<View style={styles.titleRow}>
 						<Text style={styles.itemName}>{data.name}</Text>
-						{data.frozen ? (
+						{data.frozen && (
 							<Ionicons
 								style={styles.frozenIcon}
 								name='ios-snow'
 								size={24}
 								color='black'
 							/>
-						) : (
-							<></>
 						)}
-						{data.open ? (
+						{data.open && (
 							<FontAwesome5
 								style={styles.openIcon}
 								name='box-open'
 								size={24}
 								color='black'
 							/>
-						) : (
-							<></>
 						)}
 						<Pressable onPress={() => deleteIngrediet(data.id)}>
 							<Ionicons
@@ -106,25 +102,27 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 							</Text>
 						</Text>
 					</View>
-					{data.ripeness != 'Not selected' ? (
-						<View>
-							<View style={styles.infoRow}>
-								<View style={styles.categoryColumn}>
-									<Text>Ripeness:</Text>
-									<View style={{ width: '90%' }}>
-										<ProgressBar
-											progress={progress(data.ripeness)}
-											color={progressc(data.ripeness)}
-										/>
-									</View>
-									<Text style={styles.category}>{data.ripeness}</Text>
+					{data.brand != '' && (
+						<View style={styles.brandRow}>
+							<Text style={{ margin: 5 }}>Brand: {data.brand}</Text>
+						</View>
+					)}
+					{data.ripeness != 'Not selected' && (
+						<View style={styles.infoRow}>
+							<View style={styles.categoryColumn}>
+								<View style={styles.ripenessRow}>
+									<Text>Ripeness: </Text>
+									<Text>{data.ripeness}</Text>
+								</View>
+								<View style={{ width: '100%' }}>
+									<ProgressBar
+										progress={progress(data.ripeness)}
+										color={progressc(data.ripeness)}
+									/>
 								</View>
 							</View>
 						</View>
-					) : (
-						<></>
 					)}
-
 					<View style={styles.infoRow}>
 						<View style={styles.categoryColumn}>
 							<Text>Category:</Text>
@@ -139,19 +137,7 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 							<Text style={styles.confectionType}>{data.confectionType}</Text>
 						</View>
 					</View>
-					{data.ripeness != 'Not selected' ? (
-						<View style={styles.lastCheckedRow}>
-							<Text style={styles.editedDate}>
-								Last checked{' '}
-								{formatDistanceToNow(new Date(data.editedOn), {
-									addSuffix: true,
-								})}
-							</Text>
-						</View>
-					) : (
-						<></>
-					)}
-					<View style={styles.expirationDateRow}>
+					<View style={styles.datesRow}>
 						<Text style={styles.expirationDate}>
 							{data.expirationDate != 'Not selected' && (
 								<Text>
@@ -164,6 +150,14 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 							{data.expirationDate === 'Not selected' && (
 								<Text>No expiration date selected</Text>
 							)}
+						</Text>
+						<Text style={styles.editedDate}>
+							<Text>
+								Last checked{' '}
+								{formatDistanceToNow(new Date(data.editedOn), {
+									addSuffix: true,
+								})}
+							</Text>
 						</Text>
 					</View>
 				</View>
@@ -212,11 +206,21 @@ const styles = StyleSheet.create({
 		fontStyle: 'italic',
 		fontSize: 10,
 	},
+	brandRow: {
+		justifyContent: 'center',
+	},
 	infoRow: {
 		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	ripenessRow: {
+		flex: 1,
+		flexDirection: 'row',
+	},
+	ripenessText: {
+		flex: 1,
 	},
 	categoryColumn: {
 		flex: 1,
@@ -255,21 +259,22 @@ const styles = StyleSheet.create({
 		flex: 1,
 		margin: 5,
 	},
-	editedDate: {
-		fontStyle: 'italic',
-		fontSize: 10,
-	},
-	expirationDateRow: {
+	datesRow: {
 		flex: 1,
+		flexDirection: 'row',
 		margin: 5,
 	},
 	expirationDate: {
+		flex: 1,
+		fontStyle: 'italic',
+		fontSize: 10,
+	},
+	editedDate: {
 		fontStyle: 'italic',
 		fontSize: 10,
 	},
 	container: {
 		flex: 1,
-		backgroundColor: 'blue',
 		alignItems: 'center',
 	},
 	list: {
