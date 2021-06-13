@@ -68,7 +68,7 @@ export default function ExpiringSoonScreen() {
 			}
 			if (range === expirationButtons[3]) {
 				const newData: ProductType[] = masterProductsList.filter((item) => {
-					if (isAfter(new Date(today), new Date(item.editedOn))) {
+					if (isAfter(new Date(toBeChecked), new Date(item.editedOn))) {
 						return item.expirationDate;
 					}
 				});

@@ -60,7 +60,7 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 				// style={styles.ingButton}
 				onPress={() => {
 					// clickEventListener(item);
-					checkIngredient(data.id);
+					// checkIngredient(data.id);
 					onPress(data);
 				}}
 			>
