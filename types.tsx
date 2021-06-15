@@ -55,11 +55,17 @@ export type itemModalProps = {
 	setItemModalVisibility: () => void;
 	itemID?: string;
 	data: ProductType;
+	expiringSoonScreen: boolean;
+	index?: number;
+	setTab?: (index: number) => void | undefined;
 };
 
 export type listitemProps = {
 	data: ProductType;
 	onPress: (item: ProductType) => void;
+	expiringSoonScreen: boolean;
+	index?: number;
+	setTab?: (index: number) => void | undefined;
 };
 
 export type formProps = {

@@ -8,7 +8,13 @@ import { deleteIngrediet } from '../../api/deleteIngredient';
 import { LinearGradient } from 'expo-linear-gradient';
 import Tag from './tag';
 
-const Listitem = ({ data, onPress }: listitemProps) => {
+const Listitem = ({
+	data,
+	onPress,
+	index,
+	setTab,
+	expiringSoonScreen,
+}: listitemProps) => {
 	const progress = (p: string): number => {
 		if (p === 'Barely Ripe') {
 			return 0.25;
@@ -70,14 +76,34 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 								color='black'
 							/>
 						)}
-						<Pressable onPress={() => deleteIngrediet(data.id)}>
-							<Ionicons
-								style={styles.trashIcon}
-								name='ios-trash-bin-sharp'
-								size={22}
-								color='black'
-							/>
-						</Pressable>
+						{expiringSoonScreen === false ? (
+							<Pressable
+								onPress={() => {
+									deleteIngrediet(data.id);
+								}}
+							>
+								<Ionicons
+									style={styles.trashIcon}
+									name='ios-trash-bin-sharp'
+									size={22}
+									color='black'
+								/>
+							</Pressable>
+						) : (
+							<Pressable
+								onPress={() => {
+									deleteIngrediet(data.id);
+									setTab(index);
+								}}
+							>
+								<Ionicons
+									style={styles.trashIcon}
+									name='ios-trash-bin-sharp'
+									size={22}
+									color='black'
+								/>
+							</Pressable>
+						)}
 					</View>
 					{data.category != 'Not selected' &&
 					data.location != 'Not selected' &&

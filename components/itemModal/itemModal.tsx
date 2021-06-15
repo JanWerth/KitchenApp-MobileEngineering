@@ -28,6 +28,9 @@ const ItemModal = ({
 	isVisible,
 	setItemModalVisibility,
 	data,
+	expiringSoonScreen,
+	index,
+	setTab,
 }: itemModalProps) => {
 	const [name, setName] = useState<string>('');
 	const [brand, setBrand] = useState<string>('');
@@ -335,17 +338,31 @@ const ItemModal = ({
 									setMaximumDate(in5years);
 								}}
 							></Button>
-							<Button
-								containerStyle={styles.buttonSave}
-								title={'Update'}
-								onPress={() => {
-									updateIngredient();
-									setItemModalVisibility();
-									setMaximumDate(in5years);
-								}}
-							>
-								{' '}
-							</Button>
+							{!expiringSoonScreen ? (
+								<Button
+									containerStyle={styles.buttonSave}
+									title={'Update'}
+									onPress={() => {
+										updateIngredient();
+										setItemModalVisibility();
+									}}
+								>
+									{' '}
+								</Button>
+							) : (
+								<Button
+									containerStyle={styles.buttonSave}
+									title={'Update'}
+									onPress={() => {
+										updateIngredient();
+										setItemModalVisibility();
+										setMaximumDate(in5years);
+										setTab(index);
+									}}
+								>
+									{' '}
+								</Button>
+							)}
 						</View>
 					</View>
 				</View>

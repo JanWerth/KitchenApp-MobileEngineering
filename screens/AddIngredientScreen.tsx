@@ -12,7 +12,7 @@ import AddIngredientForm from '../components/form/addIngredientForm';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Dimensions } from 'react-native';
 import saveScan from '../api/saveScan';
-import { showMessage } from 'react-native-flash-message';
+import { format, parse } from 'date-fns';
 
 const { width } = Dimensions.get('window');
 const qrSize = width * 0.7;
@@ -51,16 +51,16 @@ export default function AddIngredientScreen() {
 
 	const handleBarCodeScanned = async ({ data }: any) => {
 		try {
-			const response = await fetch(
+			setScanner(false);
+			const fetchedData = await fetch(
 				`https://world.openfoodfacts.org/api/v0/product/${data}`
 			);
-			const json = await toJson(response);
-			setScanner(false);
+			const json = await toJson(fetchedData);
 			let scannedName = '';
 			{
 				json.product.product_name_it
 					? (scannedName = json.product.product_name_it)
-					: (scannedName = json.product.product_name_);
+					: (scannedName = json.product.product_name);
 			}
 			let scannedBrand = '';
 			{
@@ -73,13 +73,13 @@ export default function AddIngredientScreen() {
 			}
 		} catch (err) {
 			console.log('error', err);
-			alert('Barcode code not be scanned');
+			alert('Barcode could not be scanned');
 			setScanner(false);
 		}
 	};
 
 	const threeButtonAlert = (name: string, brand?: string) => {
-		Alert.alert('Item Scanned', `Scanned Item ${name} from ${brand}`, [
+		Alert.alert('Item Scanned', `Scanned Item: ${name} from ${brand}`, [
 			{
 				text: `Cancel`,
 				onPress: () => console.log('Cancel without saving'),

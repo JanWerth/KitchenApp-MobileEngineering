@@ -158,15 +158,24 @@ export default function ExpiringSoonScreen() {
 				data={filteredProductsList}
 				// keyExtractor={(item, id) => id.toString()}
 				renderItem={({ item }) => (
-					<Listitem data={item} onPress={clickEventListener} />
+					<Listitem
+						expiringSoonScreen={true}
+						data={item}
+						onPress={clickEventListener}
+						index={selectedIndex}
+						setTab={(index) => updateIndex(index)}
+					/>
 				)}
 			/>
 			<ItemModal
+				expiringSoonScreen={true}
 				isVisible={modalVisible}
 				setItemModalVisibility={() => {
 					setModalVisible(!modalVisible);
 				}}
 				data={itemData}
+				index={selectedIndex}
+				setTab={(index) => updateIndex(index)}
 			/>
 		</SafeAreaView>
 	);

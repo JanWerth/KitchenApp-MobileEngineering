@@ -191,7 +191,11 @@ export default function ListQueryScreen() {
 				style={styles.list}
 				data={filteredProductsList}
 				renderItem={({ item }) => (
-					<Listitem data={item} onPress={clickEventListener} />
+					<Listitem
+						expiringSoonScreen={false}
+						data={item}
+						onPress={clickEventListener}
+					/>
 				)}
 			/>
 			<FilterModal
@@ -205,6 +209,7 @@ export default function ListQueryScreen() {
 				filterFunction={filterFuntion}
 			/>
 			<ItemModal
+				expiringSoonScreen={false}
 				isVisible={modalVisible}
 				setItemModalVisibility={() => {
 					setModalVisible(!modalVisible);
