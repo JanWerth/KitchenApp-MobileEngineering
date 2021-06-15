@@ -28,7 +28,7 @@ const Listitem = ({
 		if (p === 'Overripe') {
 			return 1;
 		} else {
-			return 0;
+			return 0.05;
 		}
 	};
 
