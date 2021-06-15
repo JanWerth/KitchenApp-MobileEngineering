@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		position: 'absolute',
 		width: '100%',
-		// backgroundColor: 'white',
 	},
 	barcodeButton: {
 		width: '17.5%',

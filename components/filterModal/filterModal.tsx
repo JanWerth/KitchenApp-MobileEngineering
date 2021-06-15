@@ -48,6 +48,7 @@ const FilterModal = ({
 					<View style={{ width: '100%' }}>
 						<View>
 							<ButtonGroup
+								textStyle={{ textAlign: 'center' }}
 								buttons={filterModalButtons}
 								selectedIndex={selectedIndex}
 								onPress={updateIndex}
@@ -224,17 +225,6 @@ const styles = StyleSheet.create({
 	filterModalFilterIcon: {
 		flex: 1,
 		alignItems: 'flex-end',
-	},
-	filterTabContainer: {
-		width: '90%',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingHorizontal: 10,
-		alignItems: 'center',
-		marginTop: 10,
-	},
-	filterTabComponent: {
-		fontSize: 18,
 	},
 	filterPicker: {
 		width: '90%',
