@@ -24,6 +24,7 @@ import FlashMessage, {
 } from 'react-native-flash-message';
 import { add } from 'date-fns';
 import { Switch, Input, Button } from 'react-native-elements';
+import Label from '../textComponents/label';
 import AddIngredientButtons from './addIngredientButtons';
 import { formProps } from '../../types';
 
@@ -104,7 +105,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 	};
 
 	const showMode = () => {
-		setShow(true);
+		setShow(!show);
 	};
 
 	const showDatepicker = () => {
@@ -135,7 +136,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 			<View style={styles.body}>
 				<ScrollView style={{ width: '100%' }}>
 					<View style={{ width: '80%', alignSelf: 'center' }}>
-						<Text style={styles.Label}>Enter Item Name:</Text>
+						<Label title={'Enter Item Name:'} />
 						<Input
 							placeholder='Name'
 							errorMessage={isEmpty(name) ? `* Name is required` : ''}
@@ -145,14 +146,12 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 							value={name}
 							inputStyle={styles.input}
 							rightIcon={
-								isEmpty(name) ? (
+								isEmpty(name) && (
 									<MaterialCommunityIcons
 										name='asterisk'
 										size={12}
 										color='red'
 									/>
-								) : (
-									<></>
 								)
 							}
 						/>
@@ -169,7 +168,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 							<></>
 						) : (
 							<View>
-								<Text style={styles.Label}>Brand:</Text>
+								<Label title={'Enter Item Brand:'} />
 								<Input
 									placeholder='Brand'
 									onChangeText={(text) => {
@@ -179,8 +178,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 									inputStyle={styles.input}
 									errorStyle={{ height: 0 }}
 								/>
-
-								<Text style={styles.Label}>Select Category:</Text>
+								<Label title={'Select Category:'} />
 								<View>
 									<RNPickerSelect
 										placeholder={categoryPlaceholder}
@@ -199,7 +197,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 										}}
 									/>
 								</View>
-								<Text style={styles.Label}>Select Location:</Text>
+								<Label title={'Select Location:'} />
 								<View>
 									<RNPickerSelect
 										placeholder={locationPlaceholder}
@@ -218,7 +216,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 										}}
 									/>
 								</View>
-								<Text style={styles.Label}>Select Confection:</Text>
+								<Label title={'Select Confection Type:'} />
 								<View>
 									<RNPickerSelect
 										placeholder={confectionPlaceholder}
@@ -253,7 +251,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 								)}
 								{!isFrozen ? (
 									<View>
-										<Text style={styles.Label}>Open</Text>
+										<Label title={'Open?'} />
 										<View style={styles.switchView}>
 											<Switch
 												value={isOpen}
@@ -265,9 +263,9 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 								) : (
 									<View></View>
 								)}
-								{selectedConfectionType === 'Fresh' ? (
+								{selectedConfectionType === 'Fresh' && (
 									<View>
-										<Text style={styles.Label}>Ripeness</Text>
+										<Label title={'Select Ripeness:'} />
 										<View>
 											<RNPickerSelect
 												placeholder={ripenessPlaceholder}
@@ -293,12 +291,10 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 											/>
 										</View>
 									</View>
-								) : (
-									<></>
 								)}
-								{selectedConfectionType === 'Fresh' && !isOpen ? (
+								{selectedConfectionType === 'Fresh' && !isOpen && (
 									<View>
-										<Text style={styles.Label}>Is the product frozen?</Text>
+										<Label title={'Is the product frozen?'} />
 										<View style={styles.switchView}>
 											<Switch
 												value={isFrozen}
@@ -307,8 +303,6 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 											/>
 										</View>
 									</View>
-								) : (
-									<></>
 								)}
 							</View>
 						)}
@@ -328,7 +322,6 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 				clear={clear}
 				setScanner={setScanner}
 			/>
-
 			<FlashMessage position='bottom' floating={true} />
 		</View>
 	);
@@ -366,17 +359,10 @@ const styles = StyleSheet.create({
 	},
 	body: {
 		flex: 9,
-		// backgroundColor: 'blue',
 		alignItems: 'center',
 		paddingTop: 10,
 		paddingBottom: 10,
 		marginBottom: 60,
-	},
-	Label: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		marginBottom: 1,
-		paddingTop: 20,
 	},
 	input: {
 		fontSize: 20,
@@ -390,9 +376,6 @@ const styles = StyleSheet.create({
 		borderColor: 'yellow',
 		borderWidth: 10,
 		fontSize: 20,
-	},
-	datepicker: {
-		marginTop: 100,
 	},
 	dateButton: {
 		alignItems: 'center',

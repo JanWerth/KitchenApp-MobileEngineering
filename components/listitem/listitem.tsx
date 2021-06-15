@@ -1,12 +1,12 @@
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { listitemProps } from '../../types';
-import { checkIngredient } from '../../api/checkIngredient';
 import { deleteIngrediet } from '../../api/deleteIngredient';
 import { LinearGradient } from 'expo-linear-gradient';
+import Tag from './tag';
 
 const Listitem = ({ data, onPress }: listitemProps) => {
 	const progress = (p: string): number => {
@@ -43,21 +43,8 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 		}
 	};
 	return (
-		<LinearGradient
-			// colors={['#5b86e5', '#d76d77', '#ffaf7b']}
-			//Blue
-			// colors={['#36d1dc', '#5b86e5']}
-			//Red/Orange
-			// colors={['#ff5f6d', '#ffc371']}
-			//Grey
-			// colors={['#bdc3c7', '#2c3e50']}
-			colors={['#4EC5F1', '#0df2c9']}
-			// Sexy blue
-			// colors={['#7bd5f5', '#787ff6']}
-			style={styles.ingButton}
-		>
+		<LinearGradient colors={['#4EC5F1', '#0df2c9']} style={styles.ingButton}>
 			<Pressable
-				// style={styles.ingButton}
 				onPress={() => {
 					// clickEventListener(item);
 					// checkIngredient(data.id);
@@ -92,24 +79,24 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 							/>
 						</Pressable>
 					</View>
-					<View style={styles.addedDateRow}>
-						<Text style={styles.addedOnDate}>
-							<Text>
-								Added{' '}
-								{formatDistanceToNow(new Date(data.addedOn), {
-									addSuffix: true,
-								})}
-							</Text>
-						</Text>
-					</View>
-					{data.brand != '' && (
-						<View style={styles.brandRow}>
-							<Text style={{ margin: 5 }}>Brand: {data.brand}</Text>
+					{data.category != 'Not selected' &&
+					data.location != 'Not selected' &&
+					data.confectionType != 'Not selected' &&
+					!data.brand ? (
+						<></>
+					) : (
+						<View style={styles.tagRow}>
+							{data.category != 'Not selected' && <Tag title={data.category} />}
+							{data.location != 'Not selected' && <Tag title={data.location} />}
+							{data.confectionType != 'Not selected' && (
+								<Tag title={data.confectionType} />
+							)}
+							{data.brand != '' && <Tag title={data.brand} />}
 						</View>
 					)}
 					{data.ripeness != 'Not selected' && (
 						<View style={styles.infoRow}>
-							<View style={styles.categoryColumn}>
+							<View style={styles.ripenessColumn}>
 								<View style={styles.ripenessRow}>
 									<Text>Ripeness: </Text>
 									<Text>{data.ripeness}</Text>
@@ -123,19 +110,15 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 							</View>
 						</View>
 					)}
-					<View style={styles.infoRow}>
-						<View style={styles.categoryColumn}>
-							<Text>Category:</Text>
-							<Text style={styles.category}>{data.category}</Text>
-						</View>
-						<View style={styles.locationColumn}>
-							<Text>Location: </Text>
-							<Text style={styles.location}>{data.location}</Text>
-						</View>
-						<View style={styles.confectionTypeColumn}>
-							<Text>Confection Type: </Text>
-							<Text style={styles.confectionType}>{data.confectionType}</Text>
-						</View>
+					<View style={styles.addedDateRow}>
+						<Text style={styles.addedOnDate}>
+							<Text>
+								Added{' '}
+								{formatDistanceToNow(new Date(data.addedOn), {
+									addSuffix: true,
+								})}
+							</Text>
+						</Text>
 					</View>
 					<View style={styles.datesRow}>
 						<Text style={styles.expirationDate}>
@@ -167,12 +150,21 @@ const Listitem = ({ data, onPress }: listitemProps) => {
 };
 
 const styles = StyleSheet.create({
-	centeredView: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		width: '100%',
-		height: '100%',
+	ingButton: {
+		marginTop: 10,
+		padding: 5,
+		borderColor: 'blue',
+		borderRadius: 10,
+		width: '98%',
+		alignSelf: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 3,
+			height: 5,
+		},
+		shadowOpacity: 1,
+		shadowRadius: 4,
+		elevation: 5,
 	},
 	listItem: {
 		flex: 1,
@@ -198,16 +190,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		marginRight: 5,
 	},
-	addedDateRow: {
-		flex: 1,
-		margin: 5,
-	},
-	addedOnDate: {
-		fontStyle: 'italic',
-		fontSize: 10,
-	},
-	brandRow: {
-		justifyContent: 'center',
+	tagRow: {
+		flexDirection: 'row',
 	},
 	infoRow: {
 		flex: 1,
@@ -215,49 +199,24 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	ripenessColumn: {
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'flex-start',
+		justifyContent: 'center',
+		margin: 5,
+	},
 	ripenessRow: {
 		flex: 1,
 		flexDirection: 'row',
 	},
-	ripenessText: {
-		flex: 1,
-	},
-	categoryColumn: {
-		flex: 1,
-		flexDirection: 'column',
-		alignItems: 'flex-start',
-		justifyContent: 'center',
-		margin: 5,
-	},
-	category: {
-		flex: 1,
-		alignItems: 'center',
-	},
-	locationColumn: {
-		flex: 1,
-		flexDirection: 'column',
-		alignItems: 'flex-start',
-		justifyContent: 'center',
-		margin: 5,
-	},
-	location: {
-		flex: 1,
-		alignItems: 'center',
-	},
-	confectionTypeColumn: {
-		flex: 1,
-		flexDirection: 'column',
-		alignItems: 'flex-start',
-		justifyContent: 'center',
-		margin: 5,
-	},
-	confectionType: {
-		flex: 1,
-		alignItems: 'center',
-	},
-	lastCheckedRow: {
+	addedDateRow: {
 		flex: 1,
 		margin: 5,
+	},
+	addedOnDate: {
+		fontStyle: 'italic',
+		fontSize: 10,
 	},
 	datesRow: {
 		flex: 1,
@@ -272,47 +231,6 @@ const styles = StyleSheet.create({
 	editedDate: {
 		fontStyle: 'italic',
 		fontSize: 10,
-	},
-	container: {
-		flex: 1,
-		alignItems: 'center',
-	},
-	list: {
-		flex: 1,
-		width: '100%',
-		height: '100%',
-		paddingLeft: 10,
-		paddingRight: 10,
-		backgroundColor: 'white',
-	},
-	loadingStyle: {
-		padding: 10,
-		color: 'lightgrey',
-		alignSelf: 'center',
-		fontStyle: 'italic',
-	},
-	searchContainer: {
-		backgroundColor: 'white',
-		borderWidth: 0,
-	},
-	ingButton: {
-		marginTop: 10,
-		padding: 5,
-		borderColor: 'blue',
-		borderRadius: 10,
-		// backgroundColor: '#CDEFFF',
-		// backgroundColor: 'white',
-
-		width: '98%',
-		alignSelf: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 3,
-			height: 5,
-		},
-		shadowOpacity: 1,
-		shadowRadius: 4,
-		elevation: 5,
 	},
 });
 

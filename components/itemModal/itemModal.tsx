@@ -19,9 +19,10 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { firebase } from '../../api/fbconfig';
-import { format, add, min } from 'date-fns';
+import { format, add } from 'date-fns';
 import { ripenessItems, ripenessPlaceholder } from '../../utils/ripenessPicker';
 import { Button, Input } from 'react-native-elements';
+import Label from '../textComponents/label';
 
 const ItemModal = ({
 	isVisible,
@@ -94,16 +95,20 @@ const ItemModal = ({
 		} else {
 			dateString = format(date, "yyyy-MM-dd'T'HH:mm");
 		}
-		await firebase.database().ref(`Ingredients/${data.id}`).update({
-			name: name,
-			brand: brand,
-			category: selectedCategory,
-			location: selectedLocation,
-			confectionType: selectedConfectionType,
-			expirationDate: dateString,
-			open: isOpen,
-			frozen: isFrozen,
-		});
+		await firebase
+			.database()
+			.ref(`Ingredients/${data.id}`)
+			.update({
+				name: name,
+				brand: brand,
+				category: selectedCategory,
+				location: selectedLocation,
+				confectionType: selectedConfectionType,
+				expirationDate: dateString,
+				editedOn: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+				open: isOpen,
+				frozen: isFrozen,
+			});
 	};
 
 	const toggleIsOpen = () => {
@@ -159,7 +164,7 @@ const ItemModal = ({
 					</View>
 					<View style={styles.divider}></View>
 					<ScrollView style={styles.scrollStyle}>
-						<Text style={styles.Label}>Edit Name:</Text>
+						<Label title={'Edit Name:'} />
 						<Input
 							placeholder='Name'
 							onChangeText={(text) => {
@@ -169,9 +174,9 @@ const ItemModal = ({
 							inputStyle={styles.input}
 							errorStyle={{ height: 0 }}
 						/>
-						<Text style={styles.Label}>Edit Brand:</Text>
+						<Label title={'Edit Brand:'} />
 						<Input
-							placeholder='Name'
+							placeholder='Brand'
 							onChangeText={(text) => {
 								setBrand(text);
 							}}
@@ -179,7 +184,7 @@ const ItemModal = ({
 							inputStyle={styles.input}
 							errorStyle={{ height: 0 }}
 						/>
-						<Text style={styles.Label}>Select Category:</Text>
+						<Label title={'Select Category:'} />
 						<View>
 							<RNPickerSelect
 								placeholder={categoryPlaceholder}
@@ -199,7 +204,7 @@ const ItemModal = ({
 								}}
 							/>
 						</View>
-						<Text style={styles.Label}>Select Location:</Text>
+						<Label title={'Select Location:'} />
 						<View>
 							<RNPickerSelect
 								placeholder={locationPlaceholder}
@@ -218,7 +223,7 @@ const ItemModal = ({
 								}}
 							/>
 						</View>
-						<Text style={styles.Label}>Select Confection:</Text>
+						<Label title={'Select Confection Type:'} />
 						<View>
 							<RNPickerSelect
 								placeholder={confectionPlaceholder}
@@ -257,16 +262,11 @@ const ItemModal = ({
 								<View style={styles.openRow}>
 									<Text style={styles.openLabel}>Open?</Text>
 									{!isOpen ? (
-										<Pressable style={styles.boxIcon} onPress={toggleIsOpen}>
+										<Pressable onPress={toggleIsOpen}>
 											<FontAwesome5 name='box' size={32} color='black' />
 										</Pressable>
 									) : (
-										<FontAwesome5
-											style={styles.boxIcon}
-											name='box-open'
-											size={32}
-											color='black'
-										/>
+										<FontAwesome5 name='box-open' size={32} color='black' />
 									)}
 								</View>
 								{isOpen && (
@@ -278,13 +278,12 @@ const ItemModal = ({
 						)}
 						{selectedConfectionType === 'Fresh' && (
 							<View>
-								<Text style={styles.Label}>Ripeness</Text>
+								<Label title={'Select Ripeness:'} />
 								<View>
 									<RNPickerSelect
 										placeholder={ripenessPlaceholder}
 										onValueChange={(value) => {
 											setSelectedRipeness(value);
-											// setEdited(today);
 										}}
 										items={ripenessItems}
 										useNativeAndroidPickerStyle={false}
@@ -304,7 +303,7 @@ const ItemModal = ({
 						)}
 						{selectedConfectionType === 'Fresh' && !isOpen && (
 							<View>
-								<Text style={styles.Label}>Is the product frozen?</Text>
+								<Label title={'Is the product frozen?'} />
 								{!isFrozen ? (
 									<View style={{ paddingBottom: 10 }}>
 										<Button
@@ -325,12 +324,12 @@ const ItemModal = ({
 							</View>
 						)}
 					</ScrollView>
-					<View style={styles.modalFooter}>
+					<View>
 						<View style={styles.divider}></View>
 						<View style={styles.modalButtonRow}>
 							<Button
 								title={'Close'}
-								style={[styles.button, styles.buttonClose]}
+								containerStyle={styles.buttonClose}
 								onPress={() => {
 									setItemModalVisibility();
 									setMaximumDate(in5years);
@@ -338,8 +337,7 @@ const ItemModal = ({
 							></Button>
 							<Button
 								containerStyle={styles.buttonSave}
-								title={'Save'}
-								style={[styles.button, styles.buttonSave]}
+								title={'Update'}
 								onPress={() => {
 									updateIngredient();
 									setItemModalVisibility();
@@ -389,38 +387,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: '100%',
 	},
-	Label: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		marginBottom: 1,
-		paddingTop: 20,
-	},
-	input: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		height: 45,
-	},
-	datepicker: {
-		marginTop: 100,
-	},
-	dateButton: {
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: 12,
-		paddingHorizontal: 32,
-		borderRadius: 4,
-		elevation: 3,
-		backgroundColor: 'blue',
-		margin: 15,
-	},
-	boxIcon: {},
-	dateText: {
-		fontSize: 16,
-		lineHeight: 21,
-		fontWeight: 'bold',
-		letterSpacing: 0.25,
-		color: 'white',
-	},
 	modalView: {
 		padding: 10,
 		backgroundColor: 'white',
@@ -453,28 +419,15 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	modalEditIcon: {
-		flex: 1,
-		alignItems: 'flex-end',
-		justifyContent: 'center',
-	},
-	button: {
-		borderRadius: 20,
-		padding: 10,
-		elevation: 2,
-	},
-	buttonOpen: {
-		backgroundColor: '#F194FF',
-	},
-	textStyle: {
-		color: 'white',
-		fontWeight: 'bold',
-		textAlign: 'center',
-	},
 	modalTitleText: {
 		fontSize: 20,
 		fontWeight: 'bold',
 		marginBottom: 1,
+	},
+	modalEditIcon: {
+		flex: 1,
+		alignItems: 'flex-end',
+		justifyContent: 'center',
 	},
 	divider: {
 		width: '100%',
@@ -486,29 +439,32 @@ const styles = StyleSheet.create({
 		paddingLeft: '10%',
 		paddingRight: '10%',
 	},
-	modalText: {
-		marginBottom: 15,
-		textAlign: 'center',
+	input: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		height: 45,
 	},
-	modalFooter: {},
-	modalButtonRow: {
-		width: '100%',
-		flexDirection: 'row',
-		padding: 10,
-		alignItems: 'center',
-		justifyContent: 'space-evenly',
-		marginTop: 5,
-	},
-	buttonClose: {
-		width: '17.5%',
-		height: 50,
-		backgroundColor: '#353fcc',
-		borderRadius: 75,
+	dateButton: {
 		alignItems: 'center',
 		justifyContent: 'center',
+		paddingVertical: 12,
+		paddingHorizontal: 32,
+		borderRadius: 4,
+		elevation: 3,
+		backgroundColor: 'blue',
+		margin: 15,
 	},
-	buttonSave: {
-		width: '65%',
+	dateText: {
+		fontSize: 16,
+		lineHeight: 21,
+		fontWeight: 'bold',
+		letterSpacing: 0.25,
+		color: 'white',
+	},
+	textStyle: {
+		color: 'white',
+		fontWeight: 'bold',
+		textAlign: 'center',
 	},
 	openRow: {
 		flexDirection: 'row',
@@ -526,8 +482,21 @@ const styles = StyleSheet.create({
 		marginTop: 5,
 		alignSelf: 'center',
 	},
-	switchView: {
-		alignItems: 'flex-start',
+	modalButtonRow: {
+		width: '100%',
+		flexDirection: 'row',
+		padding: 10,
+		alignItems: 'center',
+		justifyContent: 'space-evenly',
+		marginTop: 5,
+	},
+	buttonClose: {
+		width: '17.5%',
+		height: 50,
+	},
+	buttonSave: {
+		width: '65%',
+		height: 50,
 	},
 });
 

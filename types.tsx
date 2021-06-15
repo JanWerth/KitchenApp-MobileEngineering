@@ -81,3 +81,11 @@ export type addIngredientProps = {
 	clear: () => void;
 	setScanner?: () => void;
 };
+
+export type labelProps = {
+	title: string;
+};
+
+export type tagProps = {
+	title: string;
+};
