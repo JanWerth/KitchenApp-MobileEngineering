@@ -81,6 +81,9 @@ const ItemModal = ({
 		setSelectedConfectionType(data?.confectionType);
 		setIsOpen(data?.open);
 		setIsFrozen(data?.frozen);
+		if (data?.frozen) {
+			setMinimumDate(in6months);
+		}
 		if (data?.expirationDate === 'Not selected') {
 			setDate(new Date());
 		} else {
@@ -508,7 +511,7 @@ const styles = StyleSheet.create({
 		marginTop: 5,
 	},
 	buttonClose: {
-		width: '17.5%',
+		width: '22.5%',
 		height: 50,
 	},
 	buttonSave: {

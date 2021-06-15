@@ -92,11 +92,9 @@ const styles = StyleSheet.create({
 	},
 	barcodeButton: {
 		width: '17.5%',
-		borderRadius: 75,
 	},
 	addIngredientButton: {
 		width: '65%',
-		borderRadius: 75,
 	},
 	addIngredientText: {
 		fontSize: 22,
