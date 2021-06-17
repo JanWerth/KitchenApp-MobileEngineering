@@ -162,7 +162,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 									? 'Add more information'
 									: 'Hide more information'
 							}
-							type='outline'
+							type='clear'
 							onPress={() => setAdditionalInformation(!additionalInformation)}
 						/>
 						{!additionalInformation ? (

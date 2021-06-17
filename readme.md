@@ -7,6 +7,10 @@
 3. Run yarn in the folder
 4. Run expo
 
+### Tests
+
+The App has been tested on Android 10 (Mobile Phone) and Android 11 (Virtual Device)
+
 ### Todo
 
 - #### Todos

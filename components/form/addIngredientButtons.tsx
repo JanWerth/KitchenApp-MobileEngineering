@@ -32,7 +32,6 @@ const AddIngredientButtons = ({
 			} else {
 				expiry = format(expirationDate, "yyyy-MM-dd'T'HH:mm");
 			}
-
 			let now = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 			addIngredient(
 				name,

@@ -124,7 +124,6 @@ const Listitem = ({
 						<View style={styles.infoRow}>
 							<View style={styles.ripenessColumn}>
 								<View style={styles.ripenessRow}>
-									<Text>Ripeness: </Text>
 									<Text>{data.ripeness}</Text>
 								</View>
 								<View style={{ width: '100%' }}>

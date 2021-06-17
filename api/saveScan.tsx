@@ -2,9 +2,8 @@ import { format } from 'date-fns';
 import { showMessage } from 'react-native-flash-message';
 import { addIngredient } from './addIngredient';
 
-let now = format(new Date(), "yyyy-MM-dd'T'HH:mm");
-
 const saveScan = (name: string, brand?: string) => {
+	let now = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 	let scannedBrand = 'Not selected';
 	{
 		brand ? (scannedBrand = brand) : (scannedBrand = 'Not selected');
