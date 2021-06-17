@@ -4,6 +4,8 @@ export const categoryItems = [
 	{ label: 'Dairy', value: 'Dairy' },
 	{ label: 'Meat', value: 'Meat' },
 	{ label: 'Liquid', value: 'Liquid' },
+	{ label: 'Spice', value: 'Spice' },
+	{ label: 'Sweet', value: 'Sweet' },
 ];
 
 export const categoryPlaceholder = {

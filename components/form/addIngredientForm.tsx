@@ -127,6 +127,7 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 		setSelectedConfectionType('Not selected');
 		setSelectedRipeness('Not selected');
 		setDate(today);
+		setIsOpen(false);
 		setIsFrozen(false);
 	};
 
@@ -292,18 +293,20 @@ const AddIngredientForm = ({ setScanner }: formProps) => {
 										</View>
 									</View>
 								)}
-								{selectedConfectionType === 'Fresh' && !isOpen && (
-									<View>
-										<Label title={'Is the product frozen?'} />
-										<View style={styles.switchView}>
-											<Switch
-												value={isFrozen}
-												onValueChange={toggleIsFrozenSwitch}
-												color='blue'
-											/>
+								{(selectedConfectionType === 'Fresh' ||
+									selectedConfectionType === 'Frozen') &&
+									!isOpen && (
+										<View>
+											<Label title={'Is the product frozen?'} />
+											<View style={styles.switchView}>
+												<Switch
+													value={isFrozen}
+													onValueChange={toggleIsFrozenSwitch}
+													color='blue'
+												/>
+											</View>
 										</View>
-									</View>
-								)}
+									)}
 							</View>
 						)}
 					</View>

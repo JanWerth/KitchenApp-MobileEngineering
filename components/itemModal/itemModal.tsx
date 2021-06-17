@@ -79,6 +79,7 @@ const ItemModal = ({
 		setSelectedCategory(data?.category);
 		setSelectedLocation(data?.location);
 		setSelectedConfectionType(data?.confectionType);
+		setSelectedRipeness(data?.ripeness);
 		setIsOpen(data?.open);
 		setIsFrozen(data?.frozen);
 		if (data?.frozen) {
@@ -110,6 +111,7 @@ const ItemModal = ({
 				category: selectedCategory,
 				location: selectedLocation,
 				confectionType: selectedConfectionType,
+				ripeness: selectedRipeness,
 				expirationDate: dateString,
 				editedOn: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
 				open: isOpen,
