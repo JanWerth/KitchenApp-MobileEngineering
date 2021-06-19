@@ -82,6 +82,14 @@ const FilterModal = ({
 										<RadioButton.Android value='Liquid' />
 										<Text style={styles.radioButtonText}>Liquid</Text>
 									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android value='Spice' />
+										<Text style={styles.radioButtonText}>Spice</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android value='Sweet' />
+										<Text style={styles.radioButtonText}>Sweet</Text>
+									</View>
 								</RadioButton.Group>
 							</View>
 						)}
@@ -102,6 +110,22 @@ const FilterModal = ({
 									<View style={styles.radioButtonView}>
 										<RadioButton.Android value='Pantry' />
 										<Text style={styles.radioButtonText}>Pantry</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android value='Cabinet' />
+										<Text style={styles.radioButtonText}>Cabinet</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android value='Breadbasket' />
+										<Text style={styles.radioButtonText}>Breadbasket</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android value='Shelf' />
+										<Text style={styles.radioButtonText}>Shelf</Text>
+									</View>
+									<View style={styles.radioButtonView}>
+										<RadioButton.Android value='Spice Shelf' />
+										<Text style={styles.radioButtonText}>Spice Shelf</Text>
 									</View>
 								</RadioButton.Group>
 							</View>
