@@ -21,6 +21,7 @@
     - [Open Food Facts](#open-food-facts)
     - [Custom components](#custom-components)
   - [Known Bugs and Errors](#known-bugs-and-errors)
+  - [Expo](#expo)
   - [Tests](#tests)
 
 ## About
@@ -170,6 +171,10 @@ Currently there are two known errors in the application.
 
 - Adding a product will set its `Added date` and `Last checked date` in two hours from now.
 - An item will not be visually updated in the `Expiring Soon Screen` until the filter is reloaded. (e.g. If you change the expiration date of a product in the `Expiring Soon Filter` and update the product the list visually not be updated until you select another filter and reselect the `Expiring Soon Filter`).
+
+## Expo 
+
+[Link to the expo snack](https://snack.expo.io/@git/github.com/JanWerth/KitchenApp-MobileEngineering) which, however, does not work. 
 
 ## Tests
 
