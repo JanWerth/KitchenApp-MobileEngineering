@@ -20,6 +20,7 @@
     - [Expo Barcode Scanner](#expo-barcode-scanner)
     - [Open Food Facts](#open-food-facts)
     - [Custom components](#custom-components)
+  - [Implemented features](#implemented-features) 
   - [Known Bugs and Errors](#known-bugs-and-errors)
   - [Expo](#expo)
   - [Tests](#tests)
@@ -137,6 +138,15 @@ The `Ripe filter` will show a list of all ripe products.
 The `To be checked filter` will show a list of all prodcuts which have to be checked. An item has to be checked if they have not been checked for at least three and have a ripeness selected.
 
 <img src="https://user-images.githubusercontent.com/64210185/122637060-e3f0cb00-d0ec-11eb-9171-ec4f9765d5c1.jpg" width="500">
+
+## Implemented features
+
+  - Add an Ingredient in written format or by scanning a barcode.
+  - List of all inserted ingredients.
+  - Update inserted ingredients.
+  - Search ingredients by name.
+  - Filter ingredients by their category, location, category type and ingredients with missing data. 
+  - Filter ingredients which are epxiring soon, open, ripe or need to be checked.
 
 ## API and Components
 
