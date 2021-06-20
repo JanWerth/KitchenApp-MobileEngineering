@@ -1,14 +1,22 @@
 # Mobile Engineering Project
 
-Application Project of Jan Werth for UniBZ's [Engineering of Mobile Systems](https://github.com/rrobbes/EngineeringOfMobileSystemsV2) course.
-
+- [About](#About)
 - [Setup](#Setup)
 - [The App](#The-App)
   - [Add Ingredient Screen](#Add-Ingredient-Screen)
   - [List Screen](#List-Screen)
   - [Expiring Soon Screen](#Expiring-Soon-Screen)
+- [API and Components](#API-and-Components)
+  - [Firebase Realtime Database](#Firebase-Realtime-Database)
+  - [Expo Barcode Scanner](#Expo-Barcode-Scanner)
+  - [Open Food Facts](#Open-Food-Facts)
+  - [Custom Components](#Custom-Components)
 - [Known Bugs and Erros](#Known-Bugs-and-Errors)
 - [Tests](#Tests)
+
+## About
+
+Application Project of Jan Werth for UniBZ's [Engineering of Mobile Systems](https://github.com/rrobbes/EngineeringOfMobileSystemsV2) course.
 
 ## Setup
 
@@ -119,6 +127,32 @@ The `Ripe filter` will show a list of all ripe products.
 The `To be checked filter` will show a list of all prodcuts which have to be checked. An item has to be checked if they have not been checked for at least three and have a ripeness selected.
 
 <img src="https://user-images.githubusercontent.com/64210185/122637060-e3f0cb00-d0ec-11eb-9171-ec4f9765d5c1.jpg" width="500">
+
+## API and Components
+
+The Application makes use of three different APIs and several React Native and custom Components.
+
+### Firebase Realtime Database
+
+The [Firebase Realtime Database API](https://rnfirebase.io/database/usage) is used to store inserted data persistently. The Firebase API is free to use (up to a certain point) and provides several different features. For this Application the Firebase Realtime Database has been selected as database since it allows users to see the inserted and/or updated products immediately.
+
+### Expo Barcode Scanner
+
+The [Expo Barcode Scanner API](https://docs.expo.io/versions/v40.0.0/sdk/bar-code-scanner/) is used to scan the barcodes of products. It allows the user to use their camera in the application and scan product's barcodes with it.
+
+### Open Food Facts
+
+Since scanning a barcode alone is not providing the user with enough information about the product. The [Open Food Facts API](https://world.openfoodfacts.org/) is called. This allows the application to read out the scanned product's name and brand.
+
+### Custom components
+
+For the application several custom components have been build, such as:
+  - `Filter Modal`
+  - `Add Ingredient Form`
+  - `Item Modal`
+  - `List Item` for Flatlist
+  - `Tag`   and
+  - `Label`
 
 ## Known Bugs and Errors
 
