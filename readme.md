@@ -1,22 +1,31 @@
 # Mobile Engineering Project
 
-- [About](#About)
-- [Setup](#Setup)
-- [The App](#The-App)
-  - [Add Ingredient Screen](#Add-Ingredient-Screen)
-  - [List Screen](#List-Screen)
-  - [Expiring Soon Screen](#Expiring-Soon-Screen)
-- [API and Components](#API-and-Components)
-  - [Firebase Realtime Database](#Firebase-Realtime-Database)
-  - [Expo Barcode Scanner](#Expo-Barcode-Scanner)
-  - [Open Food Facts](#Open-Food-Facts)
-  - [Custom Components](#Custom-Components)
-- [Known Bugs and Erros](#Known-Bugs-and-Errors)
-- [Tests](#Tests)
+- [Mobile Engineering Project](#mobile-engineering-project)
+  - [About](#about)
+  - [Setup](#setup)
+  - [The App](#the-app)
+    - [Add Ingredient Screen](#add-ingredient-screen)
+      - [Inserting Written Data](#inserting-written-data)
+      - [Inserting data by scanning a barcode](#inserting-data-by-scanning-a-barcode)
+    - [List Screen](#list-screen)
+      - [Updating a Product](#updating-a-product)
+      - [Textual Search and filtering products](#textual-search-and-filtering-products)
+    - [Expiring Soon Screen](#expiring-soon-screen)
+      - [Expiring Soon](#expiring-soon)
+      - [Open](#open)
+      - [Ripe](#ripe)
+      - [To be checked](#to-be-checked)
+  - [API and Components](#api-and-components)
+    - [Firebase Realtime Database](#firebase-realtime-database)
+    - [Expo Barcode Scanner](#expo-barcode-scanner)
+    - [Open Food Facts](#open-food-facts)
+    - [Custom components](#custom-components)
+  - [Known Bugs and Errors](#known-bugs-and-errors)
+  - [Tests](#tests)
 
 ## About
 
-Application Project of Jan Werth for UniBZ's [Engineering of Mobile Systems](https://github.com/rrobbes/EngineeringOfMobileSystemsV2) course.
+Mobile Application Project of Jan Werth for UniBZ's [Engineering of Mobile Systems](https://github.com/rrobbes/EngineeringOfMobileSystemsV2) course.
 
 ## Setup
 
@@ -63,17 +72,17 @@ Once you scanned a barcode an Alert will pop up providing you with information o
 
 ### List Screen
 
-This screen shows all inserted products in different views based on the provided data. Depending on how much information is provided the item will be displayed differently. Some data that will always be shown is the `name`, the `added date`, the `expiration date` (if no expiration date is selected it will show `No expiration date selected` and the `Last checked date`. Furtermore, in the top right corner the will always be an icon to `delete` the product and depending on provided information it will also show an open box if the product is `open` or a snowflake if the item is `frozen`. If it is neither `open` nor `frozen` only the `delete` icon is shown in the top right corner. 
+This screen shows all inserted products in different views based on the provided data. Depending on how much information is provided the item will be displayed differently. Some data that will always be shown is the `name`, the `added date`, the `expiration date` (if no expiration date is selected it will show `No expiration date selected` and the `Last checked date`. Furtermore, in the top right corner the will always be an icon to `delete` the product and depending on provided information it will also show an open box if the product is `open` or a snowflake if the item is `frozen`. If it is neither `open` nor `frozen` only the `delete` icon is shown in the top right corner.
 
 <img src="https://user-images.githubusercontent.com/64210185/122636954-4b5a4b00-d0ec-11eb-8c5e-0508eb692020.jpg" width="500">
 
-If a product is provided with additional information the appearance of the listitem will change. `Category`, `Location`, `Confection Type` and `Brand` are shown as `tags` right under the product's name. And if there is also a `ripeness` selected it will be displayed in written format (e.g. "barely ripe", "ripe", "very ripe", etc.) and in graphical format as a `Progress bar`.  
+If a product is provided with additional information the appearance of the listitem will change. `Category`, `Location`, `Confection Type` and `Brand` are shown as `tags` right under the product's name. And if there is also a `ripeness` selected it will be displayed in written format (e.g. "barely ripe", "ripe", "very ripe", etc.) and in graphical format as a `Progress bar`.
 
 <img src="https://user-images.githubusercontent.com/64210185/122636956-50b79580-d0ec-11eb-95bf-b5e90e3c3647.jpg" width="500">
 
 #### Updating a Product
 
-By clicking on a product a modal pops up where all of the product's data can be edited. The presented form is very similar to the `Add product form`, but this time it is not possible to close an item once it is open (Except if you clicked on the box to open it, but then do not save it). To update the `Last checked date` you can open the `Edit Ingredient Modal` and simply click on `Update`. This will set the last `Last checked date` to now. 
+By clicking on a product a modal pops up where all of the product's data can be edited. The presented form is very similar to the `Add product form`, but this time it is not possible to close an item once it is open (Except if you clicked on the box to open it, but then do not save it). To update the `Last checked date` you can open the `Edit Ingredient Modal` and simply click on `Update`. This will set the last `Last checked date` to now.
 
 https://user-images.githubusercontent.com/64210185/122636996-92484080-d0ec-11eb-96e3-64349aa9503c.mp4
 
@@ -147,18 +156,20 @@ Since scanning a barcode alone is not providing the user with enough information
 ### Custom components
 
 For the application several custom components have been build, such as:
-  - `Filter Modal`
-  - `Add Ingredient Form`
-  - `Item Modal`
-  - `List Item` for Flatlist
-  - `Tag`   and
-  - `Label`
+
+- `Filter Modal`
+- `Add Ingredient Form`
+- `Item Modal`
+- `List Item` for Flatlist
+- `Tag` and
+- `Label`
 
 ## Known Bugs and Errors
 
-Currently there are two known errors in the application. 
- - Adding a product will set its `Added date` and `Last checked date` in two hours from now. 
- - An item will not be visually updated in the `Expiring Soon Screen` until the filter is reloaded. (e.g. If you change the expiration date of a product in the `Expiring Soon Filter` and update the product the list visually not be updated until you select another filter and reselect the `Expiring Soon Filter`).
+Currently there are two known errors in the application.
+
+- Adding a product will set its `Added date` and `Last checked date` in two hours from now.
+- An item will not be visually updated in the `Expiring Soon Screen` until the filter is reloaded. (e.g. If you change the expiration date of a product in the `Expiring Soon Filter` and update the product the list visually not be updated until you select another filter and reselect the `Expiring Soon Filter`).
 
 ## Tests
 
