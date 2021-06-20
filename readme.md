@@ -33,7 +33,7 @@ Mobile Application Project of Jan Werth for UniBZ's [Engineering of Mobile Syste
 To run this project you have to follow several steps:
 
 1. Install [NodeJS](https://nodejs.org/en/).
-2. Install [expo-cli](https://docs.expo.io/get-started/installation/) with the Node Package Manager. To do this run `https://docs.expo.io/get-started/installation/` on the command line.
+2. Install [expo-cli](https://docs.expo.io/get-started/installation/) with the Node Package Manager. To do this run `npm install --global expo-cli` on the command line.
 3. Clone the project in your IDE of choice .
 4. Run `npm install` or `yarn install` in the cloned folder.
 5. Run `expo-go` to start the app.
