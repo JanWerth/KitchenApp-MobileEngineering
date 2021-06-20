@@ -26,7 +26,7 @@
 
 ## About
 
-Mobile Application Project of Jan Werth for UniBZ's [Engineering of Mobile Systems](https://github.com/rrobbes/EngineeringOfMobileSystemsV2) course.
+Mobile Application Project for UniBZ's [Engineering of Mobile Systems](https://github.com/rrobbes/EngineeringOfMobileSystemsV2) course.
 
 ## Setup
 
@@ -53,13 +53,13 @@ To insert data in the written format you are presented with a form. Of all the f
 <img src="https://user-images.githubusercontent.com/64210185/122637108-3336fb80-d0ed-11eb-8446-4455075aafe1.jpg" width="500">
 <img src="https://user-images.githubusercontent.com/64210185/122637115-37631900-d0ed-11eb-847d-bb2720b8334c.jpg" width="500">
 
-When you click on the `Add more information` button you are presented with the full form. The form consist of an additional text input field for the product's `brand name`, three pickers for the `category`, the `location` where the product is stored and the `onfection type`. Additionally, you can select an `expiration date` and set the item to `open`. This will automatically open the expiration date picker with a maximum date set in week. (By selecting today's date in the expiration date picker the date will be set to `Not selected`). Furthermore, fresh products (selected `Fresh` in the confection type picker) will provide you with two additional fields: a `ripeness` picker to selects the item's ripeness and a `frozen` switch. By switching it to frozen the expiration date will be set to in 6 months from today.
+When you click on the `Add more information` button you are presented with the full form. The form consist of an additional text input field for the product's `brand name`, three pickers for the `category`, the `location` where the product is stored and the `onfection type`. Additionally, you can select an `expiration date` and set the item to `open`. This will automatically open the expiration date picker with a maximum date set in week. (By selecting today's date in the expiration date picker the date will be set to `Not selected`). Furthermore, fresh products (selected `Fresh` in the confection type picker) will provide you with two additional fields: a `ripeness` picker to selects the item's ripeness and a `frozen` switch. By switching it to frozen the expiration date will be set to 6 months from today.
 
 https://user-images.githubusercontent.com/64210185/122636930-1ea63380-d0ec-11eb-95c8-b8a5bf220f48.mp4
 
 #### Inserting data by scanning a barcode
 
-You can also insert a product by scanning its barcode. To use this feature you have to agree to the usage of you camera asked by the app the first time you launch it (if you decline it will ask you everytime you open the app, except if you choose `Deny and don't ask again`).
+You can also insert a product by scanning its barcode. To use this feature you have to agree to the usage of you camera asked by the app the first time you launch it (if you decline it, it will ask you everytime you open the app, except if you choose `Deny and don't ask again`).
 
 <img src="https://user-images.githubusercontent.com/64210185/122636949-3aa9d500-d0ec-11eb-9d61-d63c76181efc.jpg" width="500">
 
@@ -67,13 +67,13 @@ https://user-images.githubusercontent.com/64210185/122667368-cbe37f00-d1b2-11eb-
 
 Once you scanned a barcode an Alert will pop up providing you with information on the scanned product and giving you three options to choose from:
 
-- Cancel. Clicking on this will close the Alert without inserting the scanned product to the database.
-- Scan again. The Barcode scanner will open once again so you can scan a product again in case the wrong bardcode got scanned.
-- Save. This will save the scanned product to the database.
+- `Cancel`. Clicking on this will close the Alert without inserting the scanned product to the database.
+- `Scan again`. The Barcode scanner will open once again so you can scan a product again in case the wrong bardcode got scanned.
+- `Save`. This will save the scanned product to the database.
 
 ### List Screen
 
-This screen shows all inserted products in different views based on the provided data. Depending on how much information is provided the item will be displayed differently. Some data that will always be shown is the `name`, the `added date`, the `expiration date` (if no expiration date is selected it will show `No expiration date selected` and the `Last checked date`. Furtermore, in the top right corner the will always be an icon to `delete` the product and depending on provided information it will also show an open box if the product is `open` or a snowflake if the item is `frozen`. If it is neither `open` nor `frozen` only the `delete` icon is shown in the top right corner.
+This screen shows all inserted products in different views based on the provided data. Depending on how much information is provided the item will be displayed differently. Some data that will always be shown is the `name`, the `added date`, the `expiration date` (if no expiration date is selected it will show `No expiration date selected`) and the `Last checked date`. Furtermore, in the top right corner there will always be an icon to `delete` the product and depending on provided information it will also show an open box if the product is `open` or a snowflake if the item is `frozen`. If it is neither `open` nor `frozen` only the `delete` icon is shown in the top right corner.
 
 <img src="https://user-images.githubusercontent.com/64210185/122636954-4b5a4b00-d0ec-11eb-8c5e-0508eb692020.jpg" width="500">
 
@@ -83,7 +83,7 @@ If a product is provided with additional information the appearance of the listi
 
 #### Updating a Product
 
-By clicking on a product a modal pops up where all of the product's data can be edited. The presented form is very similar to the `Add product form`, but this time it is not possible to close an item once it is open (Except if you clicked on the box to open it, but then do not save it). To update the `Last checked date` you can open the `Edit Ingredient Modal` and simply click on `Update`. This will set the last `Last checked date` to now.
+By clicking on a product a modal pops up where all of the product's data can be edited. The presented form is very similar to the `Add product form`, but this time it is not possible to close an item once it is open (except if you clicked on the box to open it, but then do not save it). To update the `Last checked date` you can open the `Edit Ingredient Modal` and simply click on `Update`. This will set the last `Last checked date` to now.
 
 https://user-images.githubusercontent.com/64210185/122636996-92484080-d0ec-11eb-96e3-64349aa9503c.mp4
 
@@ -104,7 +104,7 @@ By clicking on the filter button a modals pops up with 4 different tabs, namely:
 - `Confection Type` and
 - `Special`
 
-While the first three are self-explanatory, in the special tab you can filter for products with `Missing data`. This will show all products where one of all the different possibilites of data insertion is missing.
+While the first three are self-explanatory, in the special tab you can filter for products with `Missing data`. This will show all products where one of all the different possibilites of data insertion is missing. In the other three filter tabs you see multiple `radiobuttons` with the possible values for each picker.
 
 https://user-images.githubusercontent.com/64210185/122637040-ccb1dd80-d0ec-11eb-968f-0d7688733e93.mp4
 
@@ -169,7 +169,7 @@ For the application several custom components have been build, such as:
 
 Currently there are two known errors in the application.
 
-- Adding a product will set its `Added date` and `Last checked date` in two hours from now.
+- Adding a product will set its `Added date` and `Last checked date` to two hours from now.
 - An item will not be visually updated in the `Expiring Soon Screen` until the filter is reloaded. (e.g. If you change the expiration date of a product in the `Expiring Soon Filter` and update the product the list visually not be updated until you select another filter and reselect the `Expiring Soon Filter`).
 
 ## Expo 
